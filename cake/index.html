@@ -163,6 +163,9 @@
   [data-shape="pear"] .gem-inner{
     clip-path: polygon(50% 0%, 76% 18%, 92% 52%, 66% 90%, 50% 100%, 34% 90%, 8% 52%, 24% 18%);
   }
+  [data-shape="cushion"] .gem-inner{
+    border-radius: 24%;
+  }
 
   .gem[data-color="pink"]    .gem-inner{ background: radial-gradient(circle at 32% 28%, #fff, #ffc2de 22%, #ff6fa8 60%, #c02368 100%); }
   .gem[data-color="blue"]    .gem-inner{ background: radial-gradient(circle at 32% 28%, #fff, #bfe9ff 22%, #4bb4f2 60%, #0d6aa8 100%); }
@@ -174,6 +177,12 @@
   .gem[data-color="gold"]    .gem-inner{ background: radial-gradient(circle at 32% 28%, #fff, #fff2b0 22%, #f0c33d 60%, #a97a09 100%); }
   .gem[data-color="emerald"] .gem-inner{ background: radial-gradient(circle at 32% 28%, #fff, #b7f5cf 20%, #1fa464 55%, #0a5c37 100%); }
   .gem[data-color="fuchsia"] .gem-inner{ background: radial-gradient(circle at 32% 28%, #fff, #ffb8e6 20%, #d6299e 55%, #7a1360 100%); }
+  .gem[data-color="aquamarine"] .gem-inner{ background: radial-gradient(circle at 32% 28%, #fff, #d8f7ff 20%, #6fd8f0 55%, #1a8fae 100%); }
+  .gem[data-color="opal"] .gem-inner{
+    background:
+      radial-gradient(circle at 30% 25%, rgba(255,255,255,.95), rgba(255,255,255,0) 45%),
+      conic-gradient(from 160deg, #ffc2e0, #bfe3ff, #c3ffd1, #fff3b0, #ddc2ff, #ffc2e0);
+  }
 
   .tray-label{
     font-size:.85rem; opacity:.7; margin: 6px 0 10px;
@@ -194,6 +203,7 @@
   .tray .gem[data-shape="diamond"]{ width: 36px; height: 44px; }
   .tray .gem[data-shape="heart"]{ width: 42px; height: 42px; }
   .tray .gem[data-shape="pear"]{ width: 36px; height: 44px; }
+  .tray .gem[data-shape="cushion"]{ width: 42px; height: 42px; }
 
   .controls{
     display:flex; align-items:center; justify-content:center; gap: 14px;
@@ -244,18 +254,18 @@
 <script>
 (function(){
   var TRAY_GEMS = [
+    { shape: "cushion", color: "pink" },
     { shape: "emerald", color: "emerald" },
-    { shape: "heart",   color: "pink" },
+    { shape: "cushion", color: "blue" },
+    { shape: "oval",    color: "purple" },
+    { shape: "pear",    color: "amber" },
+    { shape: "cushion", color: "clear" },
+    { shape: "round",   color: "opal" },
+    { shape: "oval",    color: "aquamarine" },
     { shape: "heart",   color: "red" },
-    { shape: "round",   color: "clear" },
-    { shape: "diamond", color: "purple" },
     { shape: "round",   color: "fuchsia" },
-    { shape: "pear",    color: "teal" },
-    { shape: "round",   color: "teal" },
-    { shape: "emerald", color: "red" },
-    { shape: "heart",   color: "clear" },
-    { shape: "pear",    color: "blue" },
-    { shape: "round",   color: "amber" }
+    { shape: "heart",   color: "pink" },
+    { shape: "round",   color: "gold" }
   ];
 
   var stage = document.getElementById("cakeStage");
