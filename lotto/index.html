@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>번호 뽑기</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: #4a3b45;
+    background: radial-gradient(circle at 20% 0%, #eef2ff, #fdeef3 60%);
+    overflow-x: hidden;
+  }
+  .page {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 28px 16px 60px;
+    text-align: center;
+  }
+  a.back {
+    display: inline-block; margin-bottom: 18px;
+    font-size: .85rem; color: #8a6a76; text-decoration: none;
+    opacity: .8;
+  }
+  a.back:hover { opacity: 1; }
+
+  h1 { font-size: 1.7rem; margin: 0 0 6px; }
+  .sub { font-size: .95rem; opacity: .75; margin: 0 0 40px; }
+
+  .stage {
+    display: flex;
+    justify-content: center;
+    padding: 20px 0;
+  }
+  .burst-btn {
+    position: relative;
+    border: none;
+    padding: 20px 40px;
+    border-radius: 999px;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(135deg, #ffd166, #ff9f43);
+    box-shadow: 0 10px 24px rgba(255, 159, 67, .45);
+    cursor: pointer;
+  }
+  .burst-btn:active { transform: scale(.96); }
+
+  @keyframes shake {
+    0%   { transform: scale(1) rotate(0deg); }
+    20%  { transform: scale(1.16) rotate(-7deg); }
+    40%  { transform: scale(0.94) rotate(6deg); }
+    60%  { transform: scale(1.08) rotate(-4deg); }
+    80%  { transform: scale(0.98) rotate(2deg); }
+    100% { transform: scale(1) rotate(0deg); }
+  }
+  .burst-btn.shaking { animation: shake .45s ease-in-out; }
+
+  .particle {
+    position: fixed;
+    left: 0; top: 0;
+    pointer-events: none;
+    z-index: 999;
+    will-change: transform, opacity;
+  }
+
+  .ball-row {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 50px;
+    min-height: 68px;
+  }
+  .ball {
+    width: 58px; height: 58px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.3rem;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0,0,0,.25);
+    box-shadow:
+      0 6px 12px rgba(0,0,0,.22),
+      inset 0 -5px 8px rgba(0,0,0,.18),
+      inset 0 4px 6px rgba(255,255,255,.5);
+    opacity: 0;
+    transform: scale(.3) translateY(14px);
+  }
+  .ball.show {
+    animation: pop-in .5s cubic-bezier(.34,1.56,.64,1) forwards;
+  }
+  @keyframes pop-in {
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .b-yellow { background: linear-gradient(160deg, #ffe58a, #fbc400); }
+  .b-blue   { background: linear-gradient(160deg, #9fe0ff, #69c8f2); }
+  .b-red    { background: linear-gradient(160deg, #ffa8a8, #ff7272); }
+  .b-gray   { background: linear-gradient(160deg, #cfcfcf, #aaaaaa); }
+  .b-green  { background: linear-gradient(160deg, #d4ea8a, #b0d840); }
+
+  .hint { font-size: .8rem; opacity: .55; margin-top: 26px; }
+</style>
+</head>
+<body>
+<div class="page">
+  <a class="back" href="../">← 홈으로</a>
+  <h1>💎 번호 뽑기</h1>
+  <p class="sub">버튼을 누르면 행운의 번호 6개가 쏟아져요</p>
+
+  <div class="stage">
+    <button id="burstBtn" class="burst-btn">✨ 번호 뽑기 ✨</button>
+  </div>
+
+  <div class="ball-row" id="ballRow"></div>
+  <p class="hint">💡 몇 번이든 다시 눌러서 새로 뽑을 수 있어요</p>
+</div>
+
+<script>
+(function(){
+  var EMOJIS = ["🪙","💎","🪙","✨","💎"];
+  var btn = document.getElementById("burstBtn");
+  var ballRow = document.getElementById("ballRow");
+
+  function ballColorClass(n){
+    if (n <= 10) return "b-yellow";
+    if (n <= 20) return "b-blue";
+    if (n <= 30) return "b-red";
+    if (n <= 40) return "b-gray";
+    return "b-green";
+  }
+
+  function pickSixNumbers(){
+    var pool = [];
+    for (var i = 1; i <= 45; i++) pool.push(i);
+    for (var i = pool.length - 1; i > 0; i--){
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = pool[i]; pool[i] = pool[j]; pool[j] = tmp;
+    }
+    return pool.slice(0, 6).sort(function(a, b){ return a - b; });
+  }
+
+  function renderBalls(nums){
+    ballRow.innerHTML = "";
+    nums.forEach(function(n, i){
+      var ball = document.createElement("div");
+      ball.className = "ball " + ballColorClass(n);
+      ball.textContent = n;
+      ballRow.appendChild(ball);
+      setTimeout(function(){ ball.classList.add("show"); }, i * 90);
+    });
+  }
+
+  function spawnParticles(originX, originY){
+    var count = 28;
+    for (var k = 0; k < count; k++){
+      var el = document.createElement("div");
+      el.className = "particle";
+      el.textContent = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+      el.style.fontSize = (16 + Math.random() * 18) + "px";
+      el.style.left = originX + "px";
+      el.style.top = originY + "px";
+      document.body.appendChild(el);
+
+      var angle = -Math.PI/2 + (Math.random() - 0.5) * Math.PI * 1.4;
+      var speed = 4 + Math.random() * 7;
+      var vx = Math.cos(angle) * speed;
+      var vy = Math.sin(angle) * speed;
+      var rot = Math.random() * 360;
+      var vrot = (Math.random() - 0.5) * 22;
+      var dx = 0, dy = 0, life = 0;
+      var maxLife = 55 + Math.random() * 30;
+
+      (function(el, vx, vy, rot, vrot, maxLife){
+        var dx = 0, dy = 0, life = 0;
+        function step(){
+          life++;
+          vy += 0.35;
+          dx += vx;
+          dy += vy;
+          rot += vrot;
+          var fadeStart = maxLife * 0.65;
+          var opacity = life > fadeStart ? Math.max(0, 1 - (life - fadeStart) / (maxLife - fadeStart)) : 1;
+          el.style.transform = "translate(" + dx + "px," + dy + "px) rotate(" + rot + "deg)";
+          el.style.opacity = opacity;
+          if (life < maxLife){
+            requestAnimationFrame(step);
+          } else {
+            el.remove();
+          }
+        }
+        requestAnimationFrame(step);
+      })(el, vx, vy, rot, vrot, maxLife);
+    }
+  }
+
+  btn.addEventListener("click", function(){
+    btn.classList.remove("shaking");
+    void btn.offsetWidth;
+    btn.classList.add("shaking");
+
+    var rect = btn.getBoundingClientRect();
+    spawnParticles(rect.left + rect.width/2, rect.top + rect.height/2);
+    renderBalls(pickSixNumbers());
+  });
+})();
+</script>
+</body>
+</html>
