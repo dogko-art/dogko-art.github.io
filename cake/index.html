@@ -156,15 +156,24 @@
   [data-shape="diamond"] .gem-inner{
     clip-path: polygon(50% 0%, 100% 45%, 50% 100%, 0% 45%);
   }
+  [data-shape="heart"] .gem-inner{
+    clip-path: polygon(50% 18%, 61% 6%, 75% 6%, 90% 18%, 94% 34%, 88% 48%, 75% 62%, 50% 88%,
+                        25% 62%, 12% 48%, 6% 34%, 10% 18%, 25% 6%, 39% 6%);
+  }
+  [data-shape="pear"] .gem-inner{
+    clip-path: polygon(50% 0%, 76% 18%, 92% 52%, 66% 90%, 50% 100%, 34% 90%, 8% 52%, 24% 18%);
+  }
 
-  .gem[data-color="pink"]   .gem-inner{ background: radial-gradient(circle at 32% 28%, #fff, #ffc2de 22%, #ff6fa8 60%, #c02368 100%); }
-  .gem[data-color="blue"]   .gem-inner{ background: radial-gradient(circle at 32% 28%, #fff, #bfe9ff 22%, #4bb4f2 60%, #0d6aa8 100%); }
-  .gem[data-color="purple"] .gem-inner{ background: radial-gradient(circle at 32% 28%, #fff, #ddc9ff 22%, #9c6bf0 60%, #5a2ba8 100%); }
-  .gem[data-color="teal"]   .gem-inner{ background: radial-gradient(circle at 32% 28%, #fff, #baf5e6 22%, #34c99a 60%, #0d7f63 100%); }
-  .gem[data-color="amber"]  .gem-inner{ background: radial-gradient(circle at 32% 28%, #fff, #ffe6ad 22%, #f5b638 60%, #b5750a 100%); }
-  .gem[data-color="red"]    .gem-inner{ background: radial-gradient(circle at 32% 28%, #fff, #ffc4c4 22%, #ef4b4b 60%, #a01717 100%); }
-  .gem[data-color="clear"]  .gem-inner{ background: radial-gradient(circle at 32% 28%, #fff, #eef4ff 22%, #b9cbe6 60%, #7c8ea6 100%); }
-  .gem[data-color="gold"]   .gem-inner{ background: radial-gradient(circle at 32% 28%, #fff, #fff2b0 22%, #f0c33d 60%, #a97a09 100%); }
+  .gem[data-color="pink"]    .gem-inner{ background: radial-gradient(circle at 32% 28%, #fff, #ffc2de 22%, #ff6fa8 60%, #c02368 100%); }
+  .gem[data-color="blue"]    .gem-inner{ background: radial-gradient(circle at 32% 28%, #fff, #bfe9ff 22%, #4bb4f2 60%, #0d6aa8 100%); }
+  .gem[data-color="purple"]  .gem-inner{ background: radial-gradient(circle at 32% 28%, #fff, #ddc9ff 22%, #9c6bf0 60%, #5a2ba8 100%); }
+  .gem[data-color="teal"]    .gem-inner{ background: radial-gradient(circle at 32% 28%, #fff, #baf5e6 22%, #34c99a 60%, #0d7f63 100%); }
+  .gem[data-color="amber"]   .gem-inner{ background: radial-gradient(circle at 32% 28%, #fff, #ffe6ad 22%, #f5b638 60%, #b5750a 100%); }
+  .gem[data-color="red"]     .gem-inner{ background: radial-gradient(circle at 32% 28%, #fff, #ffc4c4 22%, #ef4b4b 60%, #a01717 100%); }
+  .gem[data-color="clear"]   .gem-inner{ background: radial-gradient(circle at 32% 28%, #fff, #eef4ff 22%, #b9cbe6 60%, #7c8ea6 100%); }
+  .gem[data-color="gold"]    .gem-inner{ background: radial-gradient(circle at 32% 28%, #fff, #fff2b0 22%, #f0c33d 60%, #a97a09 100%); }
+  .gem[data-color="emerald"] .gem-inner{ background: radial-gradient(circle at 32% 28%, #fff, #b7f5cf 20%, #1fa464 55%, #0a5c37 100%); }
+  .gem[data-color="fuchsia"] .gem-inner{ background: radial-gradient(circle at 32% 28%, #fff, #ffb8e6 20%, #d6299e 55%, #7a1360 100%); }
 
   .tray-label{
     font-size:.85rem; opacity:.7; margin: 6px 0 10px;
@@ -183,6 +192,8 @@
   }
   .tray .gem[data-shape="oval"]{ width: 48px; height: 34px; }
   .tray .gem[data-shape="diamond"]{ width: 36px; height: 44px; }
+  .tray .gem[data-shape="heart"]{ width: 42px; height: 42px; }
+  .tray .gem[data-shape="pear"]{ width: 36px; height: 44px; }
 
   .controls{
     display:flex; align-items:center; justify-content:center; gap: 14px;
@@ -232,8 +243,20 @@
 
 <script>
 (function(){
-  var COLORS = ["pink","blue","purple","teal","amber","red","clear","gold"];
-  var SHAPES = ["round","oval","emerald","diamond"];
+  var TRAY_GEMS = [
+    { shape: "emerald", color: "emerald" },
+    { shape: "heart",   color: "pink" },
+    { shape: "heart",   color: "red" },
+    { shape: "round",   color: "clear" },
+    { shape: "diamond", color: "purple" },
+    { shape: "round",   color: "fuchsia" },
+    { shape: "pear",    color: "teal" },
+    { shape: "round",   color: "teal" },
+    { shape: "emerald", color: "red" },
+    { shape: "heart",   color: "clear" },
+    { shape: "pear",    color: "blue" },
+    { shape: "round",   color: "amber" }
+  ];
 
   var stage = document.getElementById("cakeStage");
   var tray = document.getElementById("gemTray");
@@ -253,23 +276,10 @@
     return el;
   }
 
-  // build tray: one gem per (shape,color) pair, cycling so every shape appears
-  SHAPES.forEach(function(shape, i){
-    var color = COLORS[i % COLORS.length];
-    var g = makeGemEl(shape, color);
+  TRAY_GEMS.forEach(function(def){
+    var g = makeGemEl(def.shape, def.color);
     tray.appendChild(g);
-    attachTrayDrag(g, shape, color);
-  });
-  COLORS.forEach(function(color, i){
-    if (i < SHAPES.length) return; // avoid exact duplicate of above loop's pairs
-  });
-  // add remaining colors across shapes so all 8 colors are represented
-  COLORS.forEach(function(color, i){
-    var shape = SHAPES[(i + 1) % SHAPES.length];
-    if (i < SHAPES.length && shape === SHAPES[i % SHAPES.length]) return;
-    var g = makeGemEl(shape, color);
-    tray.appendChild(g);
-    attachTrayDrag(g, shape, color);
+    attachTrayDrag(g, def.shape, def.color);
   });
 
   function attachTrayDrag(trayGem, shape, color){
@@ -311,6 +321,7 @@
     var w = base, h = base;
     if (shape === "oval"){ w = base * 1.35; h = base * 0.85; }
     if (shape === "diamond"){ w = base * 0.85; h = base * 1.15; }
+    if (shape === "pear"){ w = base * 0.82; h = base * 1.15; }
     el.style.width = w + "px";
     el.style.height = h + "px";
   }
