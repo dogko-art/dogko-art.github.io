@@ -5,240 +5,140 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>케이크 꾸미기</title>
 <style>
-  :root{
-    --bg1:#fdeef3; --bg2:#eef2ff;
-    --ink:#4a3b45;
-  }
   * { box-sizing: border-box; }
-  html,body{
-    margin:0; padding:0;
+  html, body {
+    margin: 0; padding: 0;
     touch-action: manipulation;
-    background: radial-gradient(circle at 20% 0%, var(--bg2), var(--bg1) 60%);
-    color: var(--ink);
+    background: radial-gradient(circle at 20% 0%, #eef2ff, #fdeef3 60%);
+    color: #4a3b45;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    min-height:100vh;
+    min-height: 100vh;
     overscroll-behavior: none;
   }
-  .page{
+  .page {
     max-width: 720px;
     margin: 0 auto;
     padding: 28px 16px 60px;
-    text-align:center;
+    text-align: center;
   }
-  h1{ font-size: 1.7rem; margin: 0 0 6px; }
-  .sub{ font-size: .95rem; opacity:.75; margin: 0 0 22px; }
+  h1 { font-size: 1.7rem; margin: 0 0 6px; }
+  .sub { font-size: .95rem; opacity: .75; margin: 0 0 22px; }
+  a.back {
+    display: inline-block; margin-bottom: 18px;
+    font-size: .85rem; color: #8a6a76; text-decoration: none; opacity: .8;
+  }
+  a.back:hover { opacity: 1; }
 
-  a.back{
-    display:inline-block; margin-bottom:18px;
-    font-size:.85rem; color:#8a6a76; text-decoration:none;
-    opacity:.8;
-  }
-  a.back:hover{ opacity:1; }
-
-  .stage-wrap{
-    display:flex; justify-content:center;
-    padding: 10px 0 26px;
-  }
-  #cakeStage{
+  /* 케이크 스테이지 */
+  .stage-wrap { display: flex; justify-content: center; padding: 10px 0 26px; }
+  #cakeStage {
     position: relative;
-    width: 300px;
+    width: 340px;
     height: 380px;
     touch-action: none;
   }
-
-  .plate{
-    position:absolute;
-    left:50%; bottom:-14px;
-    width: 340px; height: 26px;
+  .cake-base-img {
+    position: absolute;
+    left: 50%; bottom: 10px;
     transform: translateX(-50%);
-    background: linear-gradient(180deg, #ffffff, #e7e7ee);
-    border-radius: 50%;
-    box-shadow: 0 10px 18px rgba(0,0,0,.18);
+    width: 320px;
+    height: auto;
+    pointer-events: none;
+    filter: drop-shadow(0 12px 20px rgba(80,40,60,0.25));
   }
+  .dropzone-hint {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    color: #b98a9a; font-size: .85rem; opacity: .55;
+    pointer-events: none;
+  }
+  #cakeStage.has-gems .dropzone-hint { display: none; }
 
-  .cake-slice{
-    position:absolute;
-    inset: 0 0 20px 0;
-    display:flex;
-    flex-direction: column;
-    overflow:hidden;
-    border-radius: 10px 10px 6px 6px;
-    box-shadow: 0 18px 30px rgba(80,40,60,.25);
-  }
-  .sponge{
-    flex: 2.2;
-    background:
-      radial-gradient(circle at 15% 20%, #ff86c8 0 3px, transparent 4px),
-      radial-gradient(circle at 70% 10%, #6fc6ff 0 3px, transparent 4px),
-      radial-gradient(circle at 40% 55%, #ffd166 0 3px, transparent 4px),
-      radial-gradient(circle at 85% 60%, #9b8cff 0 3px, transparent 4px),
-      radial-gradient(circle at 25% 85%, #5ee6b0 0 3px, transparent 4px),
-      radial-gradient(circle at 60% 80%, #ff86c8 0 3px, transparent 4px),
-      radial-gradient(circle at 90% 30%, #ffd166 0 3px, transparent 4px),
-      radial-gradient(circle at 10% 60%, #9b8cff 0 3px, transparent 4px),
-      radial-gradient(circle at 50% 25%, #6fc6ff 0 3px, transparent 4px),
-      #fbeecb;
-    background-size: 26px 26px, 30px 30px, 24px 24px, 28px 28px, 22px 22px, 26px 26px, 24px 24px, 30px 30px, 26px 26px, auto;
-    background-repeat: repeat;
-  }
-  .cream{
-    flex: .55;
-    background: linear-gradient(180deg,#fffaf1,#fff1de);
-  }
-
-  .frosting-side{
-    position:absolute;
-    top: 0; right: 0; bottom: 20px;
-    width: 22px;
-    background: linear-gradient(90deg, rgba(255,250,240,0), #fffaf1 60%);
-    border-radius: 0 10px 6px 0;
-  }
-
-  .frosting-cap{
-    position:absolute;
-    top: -22px; left: -6px; right: -6px;
-    height: 46px;
-    background: #fffaf1;
-    border-radius: 50% 50% 8px 8px / 60% 60% 8px 8px;
-    box-shadow: 0 6px 10px rgba(80,40,60,.15);
-  }
-  .frosting-cap::before, .frosting-cap::after{
-    content:"";
-    position:absolute;
-    top: -14px;
-    width: 34px; height: 34px;
-    background: #fffaf1;
-    border-radius: 50%;
-    box-shadow: 0 4px 8px rgba(80,40,60,.12);
-  }
-  .frosting-cap::before{ left: 18px; }
-  .frosting-cap::after{ left: 108px; }
-
-  .dropzone-hint{
-    position:absolute; inset:0;
-    display:flex; align-items:center; justify-content:center;
-    color:#b98a9a; font-size:.85rem; opacity:.55;
-    pointer-events:none;
-  }
-  #cakeStage.has-gems .dropzone-hint{ display:none; }
-
-  .gem{
-    position:absolute;
+  /* 배치된 토핑 */
+  .topping-placed {
+    position: absolute;
     cursor: grab;
-    filter: drop-shadow(0 3px 4px rgba(0,0,0,.35));
+    user-select: none;
+    filter: drop-shadow(0 3px 5px rgba(0,0,0,0.3));
+    animation: topPop 0.3s cubic-bezier(.34,1.56,.64,1);
   }
-  .gem.gem-floating{
-    position:fixed;
+  .topping-placed:active { cursor: grabbing; }
+  .topping-placed img {
+    width: 100%; height: 100%;
+    object-fit: contain;
+    pointer-events: none;
+  }
+  @keyframes topPop {
+    0% { transform: scale(0) rotate(-10deg); opacity: 0; }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+
+  /* 드래그 중인 플로팅 토핑 */
+  .topping-floating {
+    position: fixed;
     z-index: 999;
-    pointer-events:none;
-    cursor: grabbing;
+    pointer-events: none;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
   }
-  .gem.gem-placed{ z-index: 20; }
-  .gem-inner{
-    position:absolute; inset:0;
-  }
-  .gem-shine{
-    position:absolute;
-    top: 14%; left: 18%;
-    width: 30%; height: 16%;
-    background: rgba(255,255,255,.85);
-    border-radius: 50%;
-    transform: rotate(-30deg);
-    filter: blur(0.5px);
+  .topping-floating img {
+    width: 100%; height: 100%;
+    object-fit: contain;
   }
 
-  [data-shape="round"] .gem-inner{ border-radius: 50%; }
-  [data-shape="oval"] .gem-inner{ border-radius: 50%; }
-  [data-shape="emerald"] .gem-inner{
-    border-radius: 4px;
-    clip-path: polygon(22% 0,78% 0,100% 22%,100% 78%,78% 100%,22% 100%,0 78%,0 22%);
-  }
-  [data-shape="diamond"] .gem-inner{
-    clip-path: polygon(50% 0%, 100% 45%, 50% 100%, 0% 45%);
-  }
-  [data-shape="heart"] .gem-inner{
-    clip-path: polygon(50% 18%, 61% 6%, 75% 6%, 90% 18%, 94% 34%, 88% 48%, 75% 62%, 50% 88%,
-                        25% 62%, 12% 48%, 6% 34%, 10% 18%, 25% 6%, 39% 6%);
-  }
-  [data-shape="pear"] .gem-inner{
-    clip-path: polygon(50% 0%, 76% 18%, 92% 52%, 66% 90%, 50% 100%, 34% 90%, 8% 52%, 24% 18%);
-  }
-  [data-shape="cushion"] .gem-inner{
-    border-radius: 24%;
-  }
-
-  .gem[data-color="pink"]    .gem-inner{ background: radial-gradient(circle at 32% 28%, #fff, #ffc2de 22%, #ff6fa8 60%, #c02368 100%); }
-  .gem[data-color="blue"]    .gem-inner{ background: radial-gradient(circle at 32% 28%, #fff, #bfe9ff 22%, #4bb4f2 60%, #0d6aa8 100%); }
-  .gem[data-color="purple"]  .gem-inner{ background: radial-gradient(circle at 32% 28%, #fff, #ddc9ff 22%, #9c6bf0 60%, #5a2ba8 100%); }
-  .gem[data-color="teal"]    .gem-inner{ background: radial-gradient(circle at 32% 28%, #fff, #baf5e6 22%, #34c99a 60%, #0d7f63 100%); }
-  .gem[data-color="amber"]   .gem-inner{ background: radial-gradient(circle at 32% 28%, #fff, #ffe6ad 22%, #f5b638 60%, #b5750a 100%); }
-  .gem[data-color="red"]     .gem-inner{ background: radial-gradient(circle at 32% 28%, #fff, #ffc4c4 22%, #ef4b4b 60%, #a01717 100%); }
-  .gem[data-color="clear"]   .gem-inner{ background: radial-gradient(circle at 32% 28%, #fff, #eef4ff 22%, #b9cbe6 60%, #7c8ea6 100%); }
-  .gem[data-color="gold"]    .gem-inner{ background: radial-gradient(circle at 32% 28%, #fff, #fff2b0 22%, #f0c33d 60%, #a97a09 100%); }
-  .gem[data-color="emerald"] .gem-inner{ background: radial-gradient(circle at 32% 28%, #fff, #b7f5cf 20%, #1fa464 55%, #0a5c37 100%); }
-  .gem[data-color="fuchsia"] .gem-inner{ background: radial-gradient(circle at 32% 28%, #fff, #ffb8e6 20%, #d6299e 55%, #7a1360 100%); }
-  .gem[data-color="aquamarine"] .gem-inner{ background: radial-gradient(circle at 32% 28%, #fff, #d8f7ff 20%, #6fd8f0 55%, #1a8fae 100%); }
-  .gem[data-color="opal"] .gem-inner{
-    background:
-      radial-gradient(circle at 30% 25%, rgba(255,255,255,.95), rgba(255,255,255,0) 45%),
-      conic-gradient(from 160deg, #ffc2e0, #bfe3ff, #c3ffd1, #fff3b0, #ddc2ff, #ffc2e0);
-  }
-
-  .tray-label{
-    font-size:.85rem; opacity:.7; margin: 6px 0 10px;
-  }
-  .tray{
-    display:flex; flex-wrap:wrap; justify-content:center; gap: 14px;
-    padding: 14px; margin: 0 auto 18px; max-width: 620px;
+  /* 팔레트 트레이 */
+  .tray-label { font-size: .85rem; opacity: .7; margin: 6px 0 10px; }
+  .tray {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 12px;
+    padding: 14px; margin: 0 auto 18px; max-width: 640px;
     background: rgba(255,255,255,.55);
     border-radius: 18px;
     box-shadow: 0 4px 14px rgba(80,40,60,.08);
   }
-  .tray .gem{
-    position: relative;
-    width: 40px; height: 40px;
+  .tray-item {
+    width: 48px; height: 48px;
     cursor: grab;
+    border-radius: 10px;
+    padding: 4px;
+    transition: transform 0.15s, background 0.15s;
+    display: flex; align-items: center; justify-content: center;
   }
-  .tray .gem[data-shape="oval"]{ width: 48px; height: 34px; }
-  .tray .gem[data-shape="diamond"]{ width: 36px; height: 44px; }
-  .tray .gem[data-shape="heart"]{ width: 42px; height: 42px; }
-  .tray .gem[data-shape="pear"]{ width: 36px; height: 44px; }
-  .tray .gem[data-shape="cushion"]{ width: 42px; height: 42px; }
+  .tray-item:hover {
+    background: rgba(255,180,220,0.15);
+    transform: scale(1.1);
+  }
+  .tray-item:active { transform: scale(0.9); }
+  .tray-item img {
+    width: 100%; height: 100%;
+    object-fit: contain;
+    pointer-events: none;
+    filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2));
+  }
 
-  .controls{
-    display:flex; align-items:center; justify-content:center; gap: 14px;
-    flex-wrap: wrap;
+  /* 컨트롤 */
+  .controls {
+    display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap;
   }
-  button#resetBtn{
-    border:none; padding: 10px 18px; border-radius: 999px;
-    background: linear-gradient(135deg,#ff9fc7,#c58bf2);
-    color:#fff; font-size: .9rem; font-weight:600;
-    cursor:pointer;
+  button#resetBtn {
+    border: none; padding: 10px 18px; border-radius: 999px;
+    background: linear-gradient(135deg, #ff9fc7, #c58bf2);
+    color: #fff; font-size: .9rem; font-weight: 600;
+    cursor: pointer;
     box-shadow: 0 4px 10px rgba(150,80,160,.35);
   }
-  button#resetBtn:active{ transform: scale(.96); }
-  .hint{ font-size: .8rem; opacity:.6; }
+  button#resetBtn:active { transform: scale(.96); }
+  .hint { font-size: .8rem; opacity: .6; }
 </style>
 </head>
 <body>
 <div class="page">
   <a class="back" href="../">← 홈으로</a>
-  <h1>🎂 케이크 꾸미기</h1>
+  <h1>케이크 꾸미기</h1>
   <p class="sub">아래 보석을 케이크 위로 드래그해서 나만의 케이크를 완성해보세요</p>
 
   <div class="stage-wrap">
     <div id="cakeStage">
-      <div class="plate"></div>
-      <div class="cake-slice">
-        <div class="sponge"></div>
-        <div class="cream"></div>
-        <div class="sponge"></div>
-        <div class="cream"></div>
-        <div class="sponge"></div>
-        <div class="frosting-side"></div>
-      </div>
-      <div class="frosting-cap"></div>
-      <div class="dropzone-hint">여기에 보석을 놓아보세요 ✨</div>
+      <img class="cake-base-img" src="images/cake.png" alt="케이크">
+      <div class="dropzone-hint">여기에 보석을 놓아보세요</div>
     </div>
   </div>
 
@@ -246,146 +146,143 @@
   <div class="tray" id="gemTray"></div>
 
   <div class="controls">
-    <button id="resetBtn">🔄 초기화</button>
-    <span class="hint">💡 올려둔 보석을 더블클릭(더블탭)하면 삭제돼요</span>
+    <button id="resetBtn">초기화</button>
+    <span class="hint">올려둔 보석을 더블클릭(더블탭)하면 삭제돼요</span>
   </div>
 </div>
 
 <script>
 (function(){
-  var TRAY_GEMS = [
-    { shape: "cushion", color: "pink" },
-    { shape: "emerald", color: "emerald" },
-    { shape: "cushion", color: "blue" },
-    { shape: "oval",    color: "purple" },
-    { shape: "pear",    color: "amber" },
-    { shape: "cushion", color: "clear" },
-    { shape: "round",   color: "opal" },
-    { shape: "oval",    color: "aquamarine" },
-    { shape: "heart",   color: "red" },
-    { shape: "round",   color: "fuchsia" },
-    { shape: "heart",   color: "pink" },
-    { shape: "round",   color: "gold" }
+  // 토핑 이미지 목록
+  var TOPPINGS = [
+    'topping13.png','topping14.png','topping15.png','topping16.png',
+    'topping17.png','topping18.png','topping19.png','topping20.png',
+    'topping21.png','topping22.png','topping23.png','topping24.png',
+    'topping25.png','topping26.png','topping27.png','topping28.png',
+    'topping29.png','topping30.png','topping31.png','topping32.png',
+    'gem1.png','gem3.png','gem4.png','gem5.png'
   ];
 
-  var stage = document.getElementById("cakeStage");
-  var tray = document.getElementById("gemTray");
-  var resetBtn = document.getElementById("resetBtn");
+  var stage = document.getElementById('cakeStage');
+  var tray = document.getElementById('gemTray');
+  var resetBtn = document.getElementById('resetBtn');
 
-  function makeGemEl(shape, color){
-    var el = document.createElement("div");
-    el.className = "gem";
-    el.dataset.shape = shape;
-    el.dataset.color = color;
-    var inner = document.createElement("div");
-    inner.className = "gem-inner";
-    var shine = document.createElement("div");
-    shine.className = "gem-shine";
-    inner.appendChild(shine);
-    el.appendChild(inner);
-    return el;
-  }
+  // 팔레트 렌더링
+  TOPPINGS.forEach(function(file) {
+    var item = document.createElement('div');
+    item.className = 'tray-item';
+    item.setAttribute('data-file', file);
+    var img = document.createElement('img');
+    img.src = 'images/' + file;
+    img.alt = file;
+    item.appendChild(img);
+    tray.appendChild(item);
 
-  TRAY_GEMS.forEach(function(def){
-    var g = makeGemEl(def.shape, def.color);
-    tray.appendChild(g);
-    attachTrayDrag(g, def.shape, def.color);
-  });
-
-  function attachTrayDrag(trayGem, shape, color){
-    trayGem.addEventListener("pointerdown", function(e){
+    // 드래그 시작
+    item.addEventListener('pointerdown', function(e) {
       e.preventDefault();
       var pointerId = e.pointerId;
-      var size = 46;
-      var clone = makeGemEl(shape, color);
-      clone.classList.add("gem-floating");
-      sizeGem(clone, shape, size);
-      document.body.appendChild(clone);
-      moveCloneTo(e.clientX, e.clientY);
+      var size = 50;
 
-      function moveCloneTo(x, y){
-        clone.style.left = (x - clone.offsetWidth/2) + "px";
-        clone.style.top = (y - clone.offsetHeight/2) + "px";
+      var clone = document.createElement('div');
+      clone.className = 'topping-floating';
+      clone.style.width = size + 'px';
+      clone.style.height = size + 'px';
+      var cloneImg = document.createElement('img');
+      cloneImg.src = 'images/' + file;
+      clone.appendChild(cloneImg);
+      document.body.appendChild(clone);
+
+      function moveClone(x, y) {
+        clone.style.left = (x - size/2) + 'px';
+        clone.style.top = (y - size/2) + 'px';
       }
-      function onMove(ev){
+      moveClone(e.clientX, e.clientY);
+
+      function onMove(ev) {
         if (ev.pointerId !== pointerId) return;
-        moveCloneTo(ev.clientX, ev.clientY);
+        moveClone(ev.clientX, ev.clientY);
       }
-      function onUp(ev){
+      function onUp(ev) {
         if (ev.pointerId !== pointerId) return;
-        document.removeEventListener("pointermove", onMove);
-        document.removeEventListener("pointerup", onUp);
+        document.removeEventListener('pointermove', onMove);
+        document.removeEventListener('pointerup', onUp);
         var rect = stage.getBoundingClientRect();
         if (ev.clientX >= rect.left && ev.clientX <= rect.right &&
-            ev.clientY >= rect.top && ev.clientY <= rect.bottom){
-          placeGem(shape, color, ev.clientX - rect.left, ev.clientY - rect.top);
+            ev.clientY >= rect.top && ev.clientY <= rect.bottom) {
+          placeTopping(file, ev.clientX - rect.left, ev.clientY - rect.top);
         }
         clone.remove();
       }
-      document.addEventListener("pointermove", onMove);
-      document.addEventListener("pointerup", onUp);
+      document.addEventListener('pointermove', onMove);
+      document.addEventListener('pointerup', onUp);
     });
+  });
+
+  // 케이크 위에 토핑 배치
+  function placeTopping(file, x, y) {
+    var size = 35 + Math.random() * 20;
+    var el = document.createElement('div');
+    el.className = 'topping-placed';
+    el.style.width = size + 'px';
+    el.style.height = size + 'px';
+    el.style.left = (x - size/2) + 'px';
+    el.style.top = (y - size/2) + 'px';
+    el.style.transform = 'rotate(' + (Math.random() * 30 - 15) + 'deg)';
+    el.setAttribute('data-file', file);
+
+    var img = document.createElement('img');
+    img.src = 'images/' + file;
+    el.appendChild(img);
+    stage.appendChild(el);
+    stage.classList.add('has-gems');
+
+    attachPlacedInteraction(el);
   }
 
-  function sizeGem(el, shape, base){
-    var w = base, h = base;
-    if (shape === "oval"){ w = base * 1.35; h = base * 0.85; }
-    if (shape === "diamond"){ w = base * 0.85; h = base * 1.15; }
-    if (shape === "pear"){ w = base * 0.82; h = base * 1.15; }
-    el.style.width = w + "px";
-    el.style.height = h + "px";
-  }
-
-  function placeGem(shape, color, x, y){
-    var size = 30 + Math.random() * 22;
-    var gem = makeGemEl(shape, color);
-    gem.classList.add("gem-placed");
-    sizeGem(gem, shape, size);
-    var w = parseFloat(gem.style.width), h = parseFloat(gem.style.height);
-    gem.style.left = (x - w/2) + "px";
-    gem.style.top = (y - h/2) + "px";
-    gem.style.transform = "rotate(" + (Math.random()*44 - 22) + "deg)";
-    stage.appendChild(gem);
-    stage.classList.add("has-gems");
-    attachPlacedGemInteraction(gem);
-  }
-
-  function attachPlacedGemInteraction(gem){
-    gem._lastTap = 0;
-    gem.addEventListener("pointerdown", function(e){
+  // 배치된 토핑: 드래그 이동 + 더블클릭 삭제
+  function attachPlacedInteraction(el) {
+    var lastTap = 0;
+    el.addEventListener('pointerdown', function(e) {
       e.preventDefault();
       e.stopPropagation();
 
       var now = Date.now();
-      if (now - gem._lastTap < 350){
-        gem.remove();
-        if (!stage.querySelector(".gem-placed")) stage.classList.remove("has-gems");
+      if (now - lastTap < 350) {
+        el.style.transition = 'transform 0.2s, opacity 0.2s';
+        el.style.transform = 'scale(0)';
+        el.style.opacity = '0';
+        setTimeout(function() {
+          el.remove();
+          if (!stage.querySelector('.topping-placed')) stage.classList.remove('has-gems');
+        }, 200);
         return;
       }
-      gem._lastTap = now;
+      lastTap = now;
 
       var pointerId = e.pointerId;
-      var startLeft = gem.offsetLeft, startTop = gem.offsetTop;
+      var startLeft = el.offsetLeft, startTop = el.offsetTop;
       var startX = e.clientX, startY = e.clientY;
 
-      function onMove(ev){
+      function onMove(ev) {
         if (ev.pointerId !== pointerId) return;
-        gem.style.left = (startLeft + (ev.clientX - startX)) + "px";
-        gem.style.top = (startTop + (ev.clientY - startY)) + "px";
+        el.style.left = (startLeft + (ev.clientX - startX)) + 'px';
+        el.style.top = (startTop + (ev.clientY - startY)) + 'px';
       }
-      function onUp(ev){
+      function onUp(ev) {
         if (ev.pointerId !== pointerId) return;
-        document.removeEventListener("pointermove", onMove);
-        document.removeEventListener("pointerup", onUp);
+        document.removeEventListener('pointermove', onMove);
+        document.removeEventListener('pointerup', onUp);
       }
-      document.addEventListener("pointermove", onMove);
-      document.addEventListener("pointerup", onUp);
+      document.addEventListener('pointermove', onMove);
+      document.addEventListener('pointerup', onUp);
     });
   }
 
-  resetBtn.addEventListener("click", function(){
-    stage.querySelectorAll(".gem-placed").forEach(function(g){ g.remove(); });
-    stage.classList.remove("has-gems");
+  // 초기화
+  resetBtn.addEventListener('click', function() {
+    stage.querySelectorAll('.topping-placed').forEach(function(g) { g.remove(); });
+    stage.classList.remove('has-gems');
   });
 })();
 </script>
