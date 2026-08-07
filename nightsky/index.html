@@ -174,120 +174,29 @@ html, body {
   100% { filter: hue-rotate(15deg) brightness(1.08); }
 }
 
-/* ========== 보석 — 오팔/크리스탈 실제 질감 ========== */
-
-/* 1. 라이트 오팔 (보라~시안 무지개) */
-.gem-opal-light {
-  width: 44px; height: 38px;
-  border-radius: 45% 50% 48% 46%;
-  background:
-    radial-gradient(ellipse at 25% 30%, rgba(255,255,255,0.6) 0%, transparent 30%),
-    radial-gradient(ellipse at 60% 70%, rgba(100,255,200,0.3) 0%, transparent 25%),
-    radial-gradient(ellipse at 40% 50%, rgba(200,100,255,0.3) 0%, transparent 30%),
-    radial-gradient(ellipse at 70% 30%, rgba(255,100,200,0.25) 0%, transparent 25%),
-    conic-gradient(from 30deg at 50% 50%,
-      #c8a0ff, #80d4ff, #a0ffcc, #ffc0e0, #80a0ff, #d0b0ff, #c8a0ff);
-  box-shadow:
-    inset 0 2px 10px rgba(255,255,255,0.5),
-    inset 0 -3px 8px rgba(100,50,150,0.2),
-    0 0 20px rgba(180,140,255,0.3);
-  animation: opalShift 6s ease-in-out infinite alternate;
-}
-
-/* 2. 탄자나이트 크리스탈 (남색 기둥) */
-.gem-crystal {
-  width: 22px; height: 50px;
-  position: relative;
-  background: linear-gradient(180deg,
-    rgba(60,40,120,0.9) 0%,
-    rgba(80,70,180,0.8) 20%,
-    rgba(100,120,220,0.7) 40%,
-    rgba(140,130,200,0.6) 60%,
-    rgba(180,170,220,0.7) 80%,
-    rgba(160,150,200,0.8) 100%);
-  clip-path: polygon(30% 0%, 70% 0%, 85% 8%, 80% 100%, 20% 100%, 15% 8%);
-  box-shadow: 0 0 15px rgba(100,80,200,0.4);
-}
-.gem-crystal::after {
-  content: '';
-  position: absolute; top: 0; left: 20%; right: 30%;
-  height: 100%;
-  background: linear-gradient(180deg,
-    rgba(255,255,255,0.3) 0%,
-    rgba(255,255,255,0.05) 40%,
-    rgba(255,255,255,0.15) 70%,
-    transparent 100%);
-}
-
-/* 3. 파이어 오팔 (오렌지~그린 따뜻한 무지개) */
-.gem-opal-fire {
-  width: 46px; height: 36px;
-  border-radius: 50%;
-  background:
-    radial-gradient(ellipse at 30% 35%, rgba(255,255,255,0.5) 0%, transparent 25%),
-    radial-gradient(ellipse at 60% 60%, rgba(255,200,50,0.4) 0%, transparent 30%),
-    radial-gradient(ellipse at 45% 45%, rgba(50,200,100,0.3) 0%, transparent 25%),
-    conic-gradient(from 60deg at 50% 50%,
-      #ff8040, #ffcc40, #40cc80, #6080ff, #c060ff, #ff6080, #ff8040);
-  box-shadow:
-    inset 0 2px 8px rgba(255,255,255,0.4),
-    inset 0 -2px 6px rgba(200,80,0,0.2),
-    0 0 18px rgba(255,150,50,0.3);
-  animation: opalShift 5s ease-in-out infinite alternate;
-}
-
-/* 4. 블랙 오팔 (어두운 바탕에 파랑/보라 빛) */
-.gem-opal-black {
-  width: 44px; height: 34px;
-  border-radius: 48% 52% 50% 46%;
-  background:
-    radial-gradient(ellipse at 55% 45%, rgba(50,200,255,0.5) 0%, transparent 30%),
-    radial-gradient(ellipse at 35% 60%, rgba(180,50,255,0.4) 0%, transparent 25%),
-    radial-gradient(ellipse at 70% 30%, rgba(0,150,255,0.3) 0%, transparent 20%),
-    linear-gradient(135deg, #0a0a20, #1a1040 30%, #0a0830 60%, #150a30);
-  box-shadow:
-    inset 0 2px 6px rgba(80,150,255,0.3),
-    inset 0 -2px 4px rgba(0,0,0,0.5),
-    0 0 15px rgba(100,50,255,0.4);
-  animation: opalShift 7s ease-in-out infinite alternate;
-}
-
-/* 5. 미스틱 토파즈 (오각형 스타컷) */
-.gem-mystic-star {
-  width: 44px; height: 44px;
-  clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
-  background:
-    radial-gradient(circle at 50% 50%, rgba(255,255,255,0.3) 0%, transparent 40%),
-    conic-gradient(from 0deg at 50% 50%,
-      #8b20e0, #20c8e0, #40e040, #e0e020, #e04080, #8b20e0);
-  box-shadow: 0 0 15px rgba(139,32,224,0.4);
-  position: relative;
-}
-.gem-mystic-star::after {
-  content: '';
-  position: absolute; inset: 20%;
-  clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
-  background: radial-gradient(circle at 40% 35%, rgba(255,255,255,0.5) 0%, transparent 60%);
-}
-
-/* 6. 레인보우 라운드 (프리즘 원형) */
-.gem-rainbow {
-  width: 44px; height: 44px;
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 40% 35%, rgba(255,255,255,0.6) 0%, transparent 30%),
-    conic-gradient(from 0deg at 50% 50%,
-      #ff4488, #ff8844, #ffcc22, #44dd44, #22ccff, #6644ff, #cc44ff, #ff4488);
-  box-shadow:
-    inset 0 0 15px rgba(255,255,255,0.5),
-    inset -4px -4px 10px rgba(0,0,0,0.2),
-    0 0 20px rgba(200,100,255,0.4);
-  animation: opalShift 4s ease-in-out infinite alternate;
-}
+/* ========== 보석 — 이미지로 대체됨, CSS gem은 제거 ========== */
 
 @keyframes opalShift {
   0% { filter: hue-rotate(0deg) brightness(1) saturate(1); }
   100% { filter: hue-rotate(25deg) brightness(1.1) saturate(1.1); }
+}
+
+/* ========== 보석 이미지 스타일 ========== */
+.gem-img {
+  width: 55px; height: 55px;
+  object-fit: contain;
+  pointer-events: none;
+  filter: drop-shadow(0 0 8px rgba(150,100,255,0.4));
+  animation: opalShift 6s ease-in-out infinite alternate;
+}
+.gem-img.gem-tall {
+  width: 30px; height: 60px;
+}
+.palette-btn .preview .gem-img {
+  width: 34px; height: 34px;
+}
+.palette-btn .preview .gem-img.gem-tall {
+  width: 18px; height: 34px;
 }
 
 /* ========== 팔레트 ========== */
@@ -341,6 +250,7 @@ html, body {
   display: flex; align-items: center; justify-content: center;
 }
 .palette-btn .preview > * { transform: scale(0.65); }
+.palette-btn .preview > img.gem-img { transform: scale(1); }
 .palette-btn .label {
   font-size: 0.55rem;
   color: rgba(255,255,255,0.45);
@@ -423,12 +333,12 @@ var ITEMS = [
   { id: 'planet-violet', label: '보라 행성', html: '<div class="planet planet-violet"></div>', glow: 'rgba(160,80,200,0.25)' },
   { id: 'planet-saturn', label: '토성', html: '<div class="planet planet-saturn"></div>', glow: 'rgba(220,180,100,0.2)' },
   { id: 'cloud', label: '구름', html: '<div class="cloud"></div>', glow: 'rgba(150,180,240,0.15)' },
-  { id: 'gem-opal-light', label: '라이트 오팔', html: '<div class="gem-opal-light"></div>', glow: 'rgba(180,140,255,0.3)' },
-  { id: 'gem-crystal', label: '크리스탈', html: '<div class="gem-crystal"></div>', glow: 'rgba(100,80,200,0.25)' },
-  { id: 'gem-opal-fire', label: '파이어 오팔', html: '<div class="gem-opal-fire"></div>', glow: 'rgba(255,160,60,0.25)' },
-  { id: 'gem-opal-black', label: '블랙 오팔', html: '<div class="gem-opal-black"></div>', glow: 'rgba(80,50,200,0.3)' },
-  { id: 'gem-mystic-star', label: '미스틱 스타', html: '<div class="gem-mystic-star"></div>', glow: 'rgba(139,32,224,0.25)' },
-  { id: 'gem-rainbow', label: '프리즘', html: '<div class="gem-rainbow"></div>', glow: 'rgba(200,100,255,0.3)' }
+  { id: 'gem-opal-light', label: '라이트 오팔', html: '<img class="gem-img" src="gems/twinkle.png" draggable="false">', glow: 'rgba(180,140,255,0.35)' },
+  { id: 'gem-crystal', label: '크리스탈', html: '<img class="gem-img gem-tall" src="gems/crystal.png" draggable="false">', glow: 'rgba(100,80,200,0.3)' },
+  { id: 'gem-opal-fire', label: '파이어 오팔', html: '<img class="gem-img" src="gems/garaxy.png" draggable="false">', glow: 'rgba(255,160,60,0.3)' },
+  { id: 'gem-opal-black', label: '블랙 오팔', html: '<img class="gem-img" src="gems/garaxy2.png" draggable="false">', glow: 'rgba(80,50,200,0.35)' },
+  { id: 'gem-mystic-star', label: '미스틱 스타', html: '<img class="gem-img" src="gems/jewelry.png" draggable="false">', glow: 'rgba(139,32,224,0.3)' },
+  { id: 'gem-rainbow', label: '프리즘', html: '<img class="gem-img" src="gems/jewelry2.png" draggable="false">', glow: 'rgba(200,100,255,0.35)' }
 ];
 
 // === 팔레트 렌더링 ===
