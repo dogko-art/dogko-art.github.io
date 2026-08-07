@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>나만의 밤하늘</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  touch-action: none;
+}
+
+/* 밤하늘 배경 */
+#sky {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 30% 20%, #0a1628 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 60%, #06101f 0%, transparent 60%),
+    radial-gradient(ellipse at 50% 80%, #0b1a33 0%, transparent 50%),
+    linear-gradient(180deg, #060d1a 0%, #0a1628 30%, #0d1f3a 60%, #081422 100%);
+  background-color: #060d1a;
+}
+
+/* 반짝이는 별 레이어 */
+#stars-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+.bg-star {
+  position: absolute;
+  width: 2px; height: 2px;
+  background: #fff;
+  border-radius: 50%;
+  animation: twinkle var(--dur) ease-in-out infinite;
+  opacity: var(--opa);
+}
+@keyframes twinkle {
+  0%, 100% { opacity: var(--opa); transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.4); }
+}
+
+/* 캔버스 (오브젝트 놓이는 곳) */
+#canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+}
+.placed-item {
+  position: absolute;
+  cursor: grab;
+  user-select: none;
+  transition: filter 0.2s;
+  animation: popIn 0.3s cubic-bezier(.34,1.56,.64,1);
+}
+.placed-item:hover { filter: brightness(1.2); }
+.placed-item:active { cursor: grabbing; }
+@keyframes popIn {
+  0% { transform: scale(0) rotate(-20deg); opacity: 0; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+/* 별똥별 */
+.shooting-star {
+  width: 60px; height: 2px;
+  background: linear-gradient(90deg, #fff 0%, transparent 100%);
+  border-radius: 2px;
+  transform: rotate(-35deg);
+  box-shadow: 0 0 6px 1px rgba(255,255,255,0.6);
+}
+
+/* 행성 */
+.planet {
+  width: 50px; height: 50px;
+  border-radius: 50%;
+  box-shadow: inset -8px -4px 12px rgba(0,0,0,0.5), 0 0 20px rgba(100,150,255,0.3);
+}
+.planet-purple {
+  background: radial-gradient(circle at 35% 30%, #c8a2f8, #6b3fa0 60%, #2d1654);
+}
+.planet-blue {
+  background: radial-gradient(circle at 35% 30%, #9ed8f7, #2e6fa8 60%, #0e2a4a);
+}
+.planet-pink {
+  background: radial-gradient(circle at 35% 30%, #ffc2e0, #c44a8a 60%, #5c1a3a);
+}
+.planet-ring {
+  position: relative;
+}
+.planet-ring::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 80px; height: 20px;
+  border: 2px solid rgba(200,180,255,0.5);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) rotateX(60deg);
+}
+
+/* 구름 */
+.cloud {
+  width: 80px; height: 30px;
+  background: rgba(200,210,240,0.15);
+  border-radius: 20px;
+  box-shadow: 0 0 20px rgba(200,210,240,0.1);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+/* 달 */
+.moon {
+  width: 55px; height: 55px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fffde0, #f5e6a0 50%, #d4b953);
+  box-shadow: 0 0 30px 8px rgba(255,250,180,0.25);
+}
+
+/* 미스틱 토파즈 보석 (무지개빛) */
+.gem-mystic {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background:
+    conic-gradient(from 0deg,
+      #ff4da6, #c44dff, #4dafff, #4dffc3,
+      #ffe44d, #ff7a4d, #ff4da6);
+  box-shadow:
+    inset 0 0 10px rgba(255,255,255,0.6),
+    0 0 15px rgba(200,100,255,0.5);
+  animation: gemRotate 6s linear infinite;
+}
+.gem-mystic-sq {
+  width: 36px; height: 36px;
+  border-radius: 6px;
+  background:
+    conic-gradient(from 45deg,
+      #7b2ff7, #2fd4f7, #5ef78c, #f7e62f,
+      #f77b2f, #f72f7b, #7b2ff7);
+  box-shadow:
+    inset 0 0 8px rgba(255,255,255,0.5),
+    0 0 12px rgba(120,80,255,0.5);
+  animation: gemRotate 8s linear infinite reverse;
+}
+.gem-mystic-tri {
+  width: 0; height: 0;
+  border-left: 20px solid transparent;
+  border-right: 20px solid transparent;
+  border-bottom: 36px solid #a855f7;
+  filter: drop-shadow(0 0 8px rgba(168,85,247,0.6));
+  position: relative;
+}
+.gem-mystic-tri::after {
+  content: '';
+  position: absolute;
+  top: 8px; left: -12px;
+  width: 24px; height: 24px;
+  background: conic-gradient(from 0deg, #ff6ec7, #7c4dff, #00e5ff, #76ff03, #ff6ec7);
+  border-radius: 50%;
+  opacity: 0.7;
+}
+
+/* 핑크 보석 */
+.gem-pink {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 30% 25%, #fff 0%, transparent 30%),
+    radial-gradient(circle at 50% 50%, #ffb6d9, #ff69b4 50%, #c2185b);
+  box-shadow:
+    inset 0 -4px 8px rgba(194,24,91,0.4),
+    0 0 15px rgba(255,105,180,0.5);
+}
+.gem-pink-heart {
+  width: 36px; height: 36px;
+  position: relative;
+  transform: rotate(0deg);
+}
+.gem-pink-heart::before,
+.gem-pink-heart::after {
+  content: '';
+  position: absolute;
+  width: 20px; height: 30px;
+  background: radial-gradient(circle at 40% 30%, #ffc2e0, #ff69b4 50%, #d81b60);
+  border-radius: 20px 20px 0 0;
+}
+.gem-pink-heart::before {
+  left: 0; top: 0;
+  transform: rotate(-45deg);
+  transform-origin: bottom right;
+}
+.gem-pink-heart::after {
+  right: 0; top: 0;
+  transform: rotate(45deg);
+  transform-origin: bottom left;
+}
+.gem-pink-sq {
+  width: 34px; height: 34px;
+  border-radius: 4px;
+  background:
+    linear-gradient(135deg, #fce4ec 0%, #f48fb1 30%, #e91e63 60%, #880e4f 100%);
+  box-shadow:
+    inset 2px 2px 6px rgba(255,255,255,0.5),
+    0 0 12px rgba(233,30,99,0.4);
+}
+
+@keyframes gemRotate {
+  from { filter: hue-rotate(0deg) brightness(1.1); }
+  to { filter: hue-rotate(360deg) brightness(1.1); }
+}
+
+/* 하단 팔레트 */
+#palette {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 100;
+  background: rgba(8,12,24,0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding: 12px 16px 20px;
+  transition: transform 0.3s;
+}
+.palette-title {
+  color: rgba(255,255,255,0.5);
+  font-size: 0.75rem;
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+}
+.palette-items {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  align-items: center;
+}
+.palette-items::-webkit-scrollbar { height: 4px; }
+.palette-items::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 2px; }
+.palette-btn {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: grab;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.04);
+  transition: background 0.2s, transform 0.15s;
+  user-select: none;
+}
+.palette-btn:hover {
+  background: rgba(255,255,255,0.1);
+  transform: scale(1.05);
+}
+.palette-btn:active { transform: scale(0.95); }
+.palette-btn .preview {
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+}
+.palette-btn .label {
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.6);
+  white-space: nowrap;
+}
+
+/* 안내 오버레이 */
+#intro-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(6,13,26,0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.5s;
+}
+#intro-overlay.hidden { display: none; }
+.intro-box {
+  text-align: center;
+  color: #fff;
+  padding: 40px;
+}
+.intro-emoji { font-size: 3rem; margin-bottom: 16px; }
+.intro-box h2 { font-size: 1.3rem; font-weight: 600; margin-bottom: 10px; }
+.intro-box p { font-size: 0.9rem; opacity: 0.7; line-height: 1.6; margin-bottom: 24px; }
+#intro-close {
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  padding: 10px 28px;
+  border-radius: 24px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+#intro-close:hover { background: rgba(255,255,255,0.2); }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* 삭제 존 */
+#delete-zone {
+  position: fixed;
+  bottom: 100px; left: 50%; transform: translateX(-50%);
+  width: 120px; height: 50px;
+  background: rgba(255,60,60,0.2);
+  border: 2px dashed rgba(255,60,60,0.5);
+  border-radius: 14px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,100,100,0.8);
+  font-size: 0.8rem;
+  z-index: 90;
+}
+#delete-zone.active { display: flex; }
+</style>
+</head>
+<body>
+<div id="sky"></div>
+<div id="stars-layer"></div>
+
+<!-- 배치된 오브젝트들이 놓이는 캔버스 -->
+<div id="canvas"></div>
+
+<!-- 하단 도구 팔레트 -->
+<div id="palette">
+  <div class="palette-title">꾸미기</div>
+  <div class="palette-items" id="paletteItems"></div>
+</div>
+
+<!-- 삭제 존 -->
+<div id="delete-zone">놓아서 삭제</div>
+
+<!-- 안내 오버레이 -->
+<div id="intro-overlay">
+  <div class="intro-box">
+    <div class="intro-emoji">&#127769;</div>
+    <h2>나만의 밤하늘을 꾸며보세요</h2>
+    <p>아래 팔레트에서 아이템을 골라<br>하늘 위 원하는 곳에 놓아보세요</p>
+    <button id="intro-close">시작하기</button>
+  </div>
+</div>
+
+<script>
+// === 배경 별 생성 ===
+(function createStars() {
+  var layer = document.getElementById('stars-layer');
+  for (var i = 0; i < 200; i++) {
+    var star = document.createElement('div');
+    star.className = 'bg-star';
+    star.style.left = Math.random() * 100 + '%';
+    star.style.top = Math.random() * 100 + '%';
+    star.style.setProperty('--dur', (2 + Math.random() * 4) + 's');
+    star.style.setProperty('--opa', (0.2 + Math.random() * 0.5).toString());
+    var size = 1 + Math.random() * 2;
+    star.style.width = size + 'px';
+    star.style.height = size + 'px';
+    layer.appendChild(star);
+  }
+})();
+
+// === 팔레트 아이템 정의 ===
+var ITEMS = [
+  { id: 'shooting-star', label: '별똥별', html: '<div class="shooting-star"></div>' },
+  { id: 'moon', label: '달', html: '<div class="moon"></div>' },
+  { id: 'planet-purple', label: '보라 행성', html: '<div class="planet planet-purple"></div>' },
+  { id: 'planet-blue', label: '파랑 행성', html: '<div class="planet planet-blue planet-ring"></div>' },
+  { id: 'planet-pink', label: '분홍 행성', html: '<div class="planet planet-pink"></div>' },
+  { id: 'cloud', label: '구름', html: '<div class="cloud"></div>' },
+  { id: 'gem-mystic', label: '미스틱 원형', html: '<div class="gem-mystic"></div>' },
+  { id: 'gem-mystic-sq', label: '미스틱 사각', html: '<div class="gem-mystic-sq"></div>' },
+  { id: 'gem-mystic-tri', label: '미스틱 삼각', html: '<div class="gem-mystic-tri"></div>' },
+  { id: 'gem-pink', label: '핑크 원형', html: '<div class="gem-pink"></div>' },
+  { id: 'gem-pink-heart', label: '핑크 하트', html: '<div class="gem-pink-heart"></div>' },
+  { id: 'gem-pink-sq', label: '핑크 사각', html: '<div class="gem-pink-sq"></div>' }
+];
+
+// === 팔레트 렌더링 ===
+var paletteEl = document.getElementById('paletteItems');
+ITEMS.forEach(function(item) {
+  var btn = document.createElement('div');
+  btn.className = 'palette-btn';
+  btn.setAttribute('data-item-id', item.id);
+  btn.innerHTML = '<div class="preview">' + item.html + '</div><span class="label">' + item.label + '</span>';
+  paletteEl.appendChild(btn);
+});
+
+// === 드래그 & 드롭 로직 ===
+var canvas = document.getElementById('canvas');
+var deleteZone = document.getElementById('delete-zone');
+var dragging = null;
+var dragOffset = { x: 0, y: 0 };
+var isDraggingFromPalette = false;
+var isDraggingExisting = false;
+
+function getPos(e) {
+  if (e.touches) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+  return { x: e.clientX, y: e.clientY };
+}
+
+// 팔레트에서 드래그 시작
+paletteEl.addEventListener('pointerdown', function(e) {
+  var btn = e.target.closest('.palette-btn');
+  if (!btn) return;
+  e.preventDefault();
+  var itemId = btn.getAttribute('data-item-id');
+  var item = ITEMS.find(function(i) { return i.id === itemId; });
+  if (!item) return;
+
+  var pos = getPos(e);
+  var el = document.createElement('div');
+  el.className = 'placed-item';
+  el.innerHTML = item.html;
+  el.style.left = (pos.x - 20) + 'px';
+  el.style.top = (pos.y - 20) + 'px';
+  canvas.appendChild(el);
+
+  dragging = el;
+  dragOffset = { x: 20, y: 20 };
+  isDraggingFromPalette = true;
+  deleteZone.classList.add('active');
+  document.body.style.cursor = 'grabbing';
+});
+
+// 캔버스 위 기존 아이템 드래그
+canvas.addEventListener('pointerdown', function(e) {
+  var el = e.target.closest('.placed-item');
+  if (!el) return;
+  e.preventDefault();
+  var pos = getPos(e);
+  var rect = el.getBoundingClientRect();
+  dragOffset = { x: pos.x - rect.left, y: pos.y - rect.top };
+  dragging = el;
+  isDraggingExisting = true;
+  deleteZone.classList.add('active');
+  document.body.style.cursor = 'grabbing';
+});
+
+document.addEventListener('pointermove', function(e) {
+  if (!dragging) return;
+  e.preventDefault();
+  var pos = getPos(e);
+  dragging.style.left = (pos.x - dragOffset.x) + 'px';
+  dragging.style.top = (pos.y - dragOffset.y) + 'px';
+});
+
+document.addEventListener('pointerup', function(e) {
+  if (!dragging) return;
+  var pos = getPos(e);
+  var dzRect = deleteZone.getBoundingClientRect();
+
+  // 삭제 존에 놓으면 삭제
+  if (pos.x >= dzRect.left && pos.x <= dzRect.right &&
+      pos.y >= dzRect.top && pos.y <= dzRect.bottom) {
+    dragging.style.animation = 'none';
+    dragging.style.transition = 'transform 0.2s, opacity 0.2s';
+    dragging.style.transform = 'scale(0)';
+    dragging.style.opacity = '0';
+    var el = dragging;
+    setTimeout(function() { el.remove(); }, 200);
+  }
+
+  dragging = null;
+  isDraggingFromPalette = false;
+  isDraggingExisting = false;
+  deleteZone.classList.remove('active');
+  document.body.style.cursor = '';
+  saveState();
+});
+
+// === 인트로 닫기 ===
+document.getElementById('intro-close').addEventListener('click', function() {
+  document.getElementById('intro-overlay').classList.add('hidden');
+  localStorage.setItem('nightsky-intro-seen', '1');
+});
+if (localStorage.getItem('nightsky-intro-seen')) {
+  document.getElementById('intro-overlay').classList.add('hidden');
+}
+
+// === 상태 저장/복원 (localStorage) ===
+function saveState() {
+  var items = [];
+  canvas.querySelectorAll('.placed-item').forEach(function(el) {
+    items.push({ html: el.innerHTML, left: el.style.left, top: el.style.top });
+  });
+  localStorage.setItem('nightsky-state', JSON.stringify(items));
+}
+
+function loadState() {
+  var saved = localStorage.getItem('nightsky-state');
+  if (!saved) return;
+  try {
+    var items = JSON.parse(saved);
+    items.forEach(function(data) {
+      var el = document.createElement('div');
+      el.className = 'placed-item';
+      el.innerHTML = data.html;
+      el.style.left = data.left;
+      el.style.top = data.top;
+      el.style.animation = 'none';
+      canvas.appendChild(el);
+    });
+  } catch(e) {}
+}
+loadState();
+</script>
+
+</body>
+</html>
