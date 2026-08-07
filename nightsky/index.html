@@ -15,8 +15,7 @@ html, body {
 
 /* 밤하늘 배경 */
 #sky {
-  position: fixed;
-  inset: 0;
+  position: fixed; inset: 0;
   background:
     radial-gradient(ellipse at 30% 20%, #0a1628 0%, transparent 50%),
     radial-gradient(ellipse at 70% 60%, #06101f 0%, transparent 60%),
@@ -25,12 +24,7 @@ html, body {
   background-color: #060d1a;
 }
 
-/* 반짝이는 별 레이어 */
-#stars-layer {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-}
+#stars-layer { position: fixed; inset: 0; pointer-events: none; }
 .bg-star {
   position: absolute;
   width: 2px; height: 2px;
@@ -44,12 +38,8 @@ html, body {
   50% { opacity: 1; transform: scale(1.4); }
 }
 
-/* 캔버스 (오브젝트 놓이는 곳) */
-#canvas {
-  position: fixed;
-  inset: 0;
-  z-index: 10;
-}
+/* 캔버스 */
+#canvas { position: fixed; inset: 0; z-index: 10; }
 .placed-item {
   position: absolute;
   cursor: grab;
@@ -57,272 +47,349 @@ html, body {
   transition: filter 0.2s;
   animation: popIn 0.3s cubic-bezier(.34,1.56,.64,1);
 }
-.placed-item:hover { filter: brightness(1.2); }
+.placed-item:hover { filter: brightness(1.15) drop-shadow(0 0 8px rgba(255,255,255,0.3)); }
 .placed-item:active { cursor: grabbing; }
 @keyframes popIn {
   0% { transform: scale(0) rotate(-20deg); opacity: 0; }
   100% { transform: scale(1) rotate(0deg); opacity: 1; }
 }
+@keyframes deleteOut {
+  to { transform: scale(0); opacity: 0; }
+}
 
-/* 별똥별 */
+/* ========== 별똥별 ========== */
 .shooting-star {
-  width: 60px; height: 2px;
-  background: linear-gradient(90deg, #fff 0%, transparent 100%);
-  border-radius: 2px;
+  width: 70px; height: 3px;
+  background: linear-gradient(90deg, #fff 0%, rgba(200,220,255,0.6) 40%, transparent 100%);
+  border-radius: 3px;
   transform: rotate(-35deg);
-  box-shadow: 0 0 6px 1px rgba(255,255,255,0.6);
+  box-shadow: 0 0 8px 2px rgba(200,220,255,0.5);
 }
 
-/* 행성 */
-.planet {
-  width: 50px; height: 50px;
-  border-radius: 50%;
-  box-shadow: inset -8px -4px 12px rgba(0,0,0,0.5), 0 0 20px rgba(100,150,255,0.3);
-}
-.planet-purple {
-  background: radial-gradient(circle at 35% 30%, #c8a2f8, #6b3fa0 60%, #2d1654);
-}
-.planet-blue {
-  background: radial-gradient(circle at 35% 30%, #9ed8f7, #2e6fa8 60%, #0e2a4a);
-}
-.planet-pink {
-  background: radial-gradient(circle at 35% 30%, #ffc2e0, #c44a8a 60%, #5c1a3a);
-}
-.planet-ring {
-  position: relative;
-}
-.planet-ring::after {
-  content: '';
-  position: absolute;
-  top: 50%; left: 50%;
-  width: 80px; height: 20px;
-  border: 2px solid rgba(200,180,255,0.5);
-  border-radius: 50%;
-  transform: translate(-50%, -50%) rotateX(60deg);
-}
-
-/* 구름 */
-.cloud {
-  width: 80px; height: 30px;
-  background: rgba(200,210,240,0.15);
-  border-radius: 20px;
-  box-shadow: 0 0 20px rgba(200,210,240,0.1);
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
-}
-
-/* 달 */
+/* ========== 달 ========== */
 .moon {
   width: 55px; height: 55px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #fffde0, #f5e6a0 50%, #d4b953);
-  box-shadow: 0 0 30px 8px rgba(255,250,180,0.25);
+  background:
+    radial-gradient(circle at 65% 35%, rgba(180,180,200,0.4) 0%, transparent 25%),
+    radial-gradient(circle at 30% 70%, rgba(150,150,180,0.3) 0%, transparent 20%),
+    radial-gradient(circle at 45% 25%, rgba(160,160,190,0.3) 0%, transparent 15%),
+    radial-gradient(circle at 35% 30%, #fafafa, #e8e4f0 40%, #c8c0d8 70%, #9890a8);
+  box-shadow:
+    0 0 40px 12px rgba(220,215,240,0.25),
+    inset -6px -4px 12px rgba(100,90,120,0.3);
 }
 
-/* 미스틱 토파즈 보석 (무지개빛) */
-.gem-mystic {
-  width: 40px; height: 40px;
+/* ========== 행성 — 마블링 유화 스타일 ========== */
+.planet {
+  width: 55px; height: 55px;
+  border-radius: 50%;
+  box-shadow:
+    inset -10px -6px 20px rgba(0,0,0,0.5),
+    0 0 25px rgba(150,120,200,0.2);
+  position: relative;
+}
+/* 홀로그래픽 마블 - 핑크/민트/노랑 소용돌이 */
+.planet-holo {
+  background:
+    radial-gradient(ellipse at 30% 25%, rgba(255,255,255,0.3) 0%, transparent 35%),
+    conic-gradient(from 120deg at 40% 50%,
+      #c8a0d4, #7bc8c4, #e8c090, #d4a0c8, #90b8d4, #c8a0d4);
+  background-size: 100% 100%, 100% 100%;
+}
+/* 핑크 마블 행성 */
+.planet-rose {
+  background:
+    radial-gradient(ellipse at 25% 30%, rgba(255,255,255,0.25) 0%, transparent 30%),
+    linear-gradient(160deg, #f0a0b0 0%, #d06080 30%, #e0b0a0 50%, #c06070 70%, #f0c0b0 100%);
+}
+/* 아이스 블루 행성 */
+.planet-ice {
+  background:
+    radial-gradient(ellipse at 30% 25%, rgba(255,255,255,0.35) 0%, transparent 30%),
+    linear-gradient(140deg, #c0d8f0 0%, #80a8d0 25%, #d0e0f0 45%, #90b8e0 65%, #f0e8f8 100%);
+}
+/* 보라 소용돌이 행성 */
+.planet-violet {
+  background:
+    radial-gradient(ellipse at 35% 30%, rgba(255,255,255,0.2) 0%, transparent 30%),
+    conic-gradient(from 60deg at 50% 50%,
+      #8040a0, #c060a0, #f0a080, #d080c0, #6030a0, #8040a0);
+}
+/* 토성 (고리 있는) */
+.planet-saturn {
+  background:
+    radial-gradient(ellipse at 30% 30%, rgba(255,255,255,0.2) 0%, transparent 30%),
+    linear-gradient(150deg, #e8c8a0, #d0a070, #f0d8b0, #c89060);
+}
+.planet-saturn::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 90px; height: 22px;
+  border: 3px solid;
+  border-color: rgba(240,200,100,0.5) rgba(180,140,200,0.4) rgba(100,200,180,0.4) rgba(240,160,200,0.5);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) rotateX(65deg);
+}
+
+/* ========== 구름 — 문스톤/오팔 오로라 ========== */
+.cloud {
+  width: 70px; height: 36px;
+  border-radius: 20px 22px 18px 20px;
+  background:
+    radial-gradient(ellipse at 30% 40%, rgba(130,180,255,0.5) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 30%, rgba(180,200,240,0.4) 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 70%, rgba(100,140,200,0.3) 0%, transparent 45%),
+    linear-gradient(135deg,
+      rgba(200,215,240,0.7) 0%,
+      rgba(140,170,220,0.5) 25%,
+      rgba(100,130,180,0.4) 50%,
+      rgba(160,180,210,0.5) 75%,
+      rgba(200,210,230,0.6) 100%);
+  box-shadow:
+    0 0 15px 4px rgba(150,180,240,0.15),
+    inset 0 2px 8px rgba(255,255,255,0.3),
+    inset 0 -2px 6px rgba(80,100,150,0.2);
+  animation: cloudShimmer 4s ease-in-out infinite alternate;
+}
+@keyframes cloudShimmer {
+  0% { filter: hue-rotate(0deg) brightness(1); }
+  100% { filter: hue-rotate(15deg) brightness(1.05); }
+}
+
+/* ========== 보석 — 미스틱 토파즈 방사형 커팅 ========== */
+/* 원형 (라운드 브릴리언트) */
+.gem-round {
+  width: 42px; height: 42px;
   border-radius: 50%;
   background:
     conic-gradient(from 0deg,
-      #ff4da6, #c44dff, #4dafff, #4dffc3,
-      #ffe44d, #ff7a4d, #ff4da6);
+      #ff3399, #cc33ff, #3366ff, #33ffcc,
+      #99ff33, #ffcc00, #ff6633, #ff3399,
+      #9933ff, #33ccff, #33ff66, #ffff33,
+      #ff3399);
   box-shadow:
-    inset 0 0 10px rgba(255,255,255,0.6),
+    inset 0 0 10px rgba(255,255,255,0.7),
+    inset 0 0 20px rgba(255,255,255,0.3),
     0 0 15px rgba(200,100,255,0.5);
-  animation: gemRotate 6s linear infinite;
+  position: relative;
 }
-.gem-mystic-sq {
-  width: 36px; height: 36px;
-  border-radius: 6px;
+.gem-round::after {
+  content: '';
+  position: absolute; inset: 6px;
+  border-radius: 50%;
+  background: conic-gradient(from 180deg,
+    rgba(255,100,200,0.6), rgba(100,200,255,0.6),
+    rgba(100,255,150,0.6), rgba(255,200,50,0.6),
+    rgba(255,100,200,0.6));
+  filter: blur(2px);
+}
+
+/* 사각형 (에메랄드 컷) */
+.gem-square {
+  width: 38px; height: 38px;
+  border-radius: 4px;
   background:
     conic-gradient(from 45deg,
       #7b2ff7, #2fd4f7, #5ef78c, #f7e62f,
       #f77b2f, #f72f7b, #7b2ff7);
   box-shadow:
-    inset 0 0 8px rgba(255,255,255,0.5),
+    inset 0 0 8px rgba(255,255,255,0.6),
+    inset 3px 3px 6px rgba(255,255,255,0.3),
+    inset -3px -3px 6px rgba(0,0,0,0.2),
     0 0 12px rgba(120,80,255,0.5);
-  animation: gemRotate 8s linear infinite reverse;
-}
-.gem-mystic-tri {
-  width: 0; height: 0;
-  border-left: 20px solid transparent;
-  border-right: 20px solid transparent;
-  border-bottom: 36px solid #a855f7;
-  filter: drop-shadow(0 0 8px rgba(168,85,247,0.6));
   position: relative;
 }
-.gem-mystic-tri::after {
+.gem-square::after {
   content: '';
-  position: absolute;
-  top: 8px; left: -12px;
-  width: 24px; height: 24px;
-  background: conic-gradient(from 0deg, #ff6ec7, #7c4dff, #00e5ff, #76ff03, #ff6ec7);
-  border-radius: 50%;
-  opacity: 0.7;
+  position: absolute; inset: 5px;
+  border-radius: 2px;
+  border: 1px solid rgba(255,255,255,0.3);
+  background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 50%);
 }
 
-/* 핑크 보석 */
-.gem-pink {
-  width: 38px; height: 38px;
+/* 타원형 (오벌) */
+.gem-oval {
+  width: 44px; height: 34px;
   border-radius: 50%;
   background:
-    radial-gradient(circle at 30% 25%, #fff 0%, transparent 30%),
-    radial-gradient(circle at 50% 50%, #ffb6d9, #ff69b4 50%, #c2185b);
+    conic-gradient(from 90deg,
+      #e040a0, #40e0d0, #e0e040, #a040e0,
+      #40a0e0, #e08040, #e040a0);
   box-shadow:
-    inset 0 -4px 8px rgba(194,24,91,0.4),
-    0 0 15px rgba(255,105,180,0.5);
-}
-.gem-pink-heart {
-  width: 36px; height: 36px;
+    inset 0 0 12px rgba(255,255,255,0.5),
+    0 0 14px rgba(180,80,220,0.4);
   position: relative;
-  transform: rotate(0deg);
 }
-.gem-pink-heart::before,
-.gem-pink-heart::after {
+.gem-oval::after {
+  content: '';
+  position: absolute; inset: 5px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 35% 30%, rgba(255,255,255,0.5) 0%, transparent 50%);
+}
+
+/* 쿠션 (라운드 스퀘어) */
+.gem-cushion {
+  width: 40px; height: 40px;
+  border-radius: 30%;
+  background:
+    conic-gradient(from 30deg,
+      #ff6ec7, #8b5cf6, #06b6d4, #10b981,
+      #f59e0b, #ef4444, #ff6ec7);
+  box-shadow:
+    inset 0 0 14px rgba(255,255,255,0.6),
+    inset 0 0 4px rgba(0,0,0,0.3),
+    0 0 18px rgba(139,92,246,0.5);
+  position: relative;
+}
+.gem-cushion::after {
+  content: '';
+  position: absolute; inset: 4px;
+  border-radius: 30%;
+  background:
+    radial-gradient(circle at 35% 30%, rgba(255,255,255,0.6) 0%, transparent 40%),
+    conic-gradient(from 210deg,
+      rgba(255,100,200,0.4), rgba(80,200,255,0.4),
+      rgba(100,255,150,0.4), rgba(255,200,80,0.4),
+      rgba(255,100,200,0.4));
+}
+
+/* 삼각형 (트릴리언 컷) */
+.gem-triangle {
+  width: 40px; height: 36px;
+  clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+  background:
+    conic-gradient(from 0deg at 50% 60%,
+      #ff3399, #9933ff, #3399ff, #33ff99,
+      #ffff33, #ff6633, #ff3399);
+  box-shadow: 0 0 15px rgba(255,50,150,0.5);
+  position: relative;
+}
+
+/* 하트형 */
+.gem-heart {
+  width: 38px; height: 36px;
+  position: relative;
+}
+.gem-heart::before, .gem-heart::after {
   content: '';
   position: absolute;
-  width: 20px; height: 30px;
-  background: radial-gradient(circle at 40% 30%, #ffc2e0, #ff69b4 50%, #d81b60);
-  border-radius: 20px 20px 0 0;
+  width: 22px; height: 34px;
+  border-radius: 22px 22px 0 0;
+  background:
+    conic-gradient(from 0deg,
+      #ff69b4, #ff1493, #c71585, #ff69b4,
+      #ff85c8, #ff1493, #ff69b4);
+  box-shadow: inset 0 0 8px rgba(255,255,255,0.5);
 }
-.gem-pink-heart::before {
-  left: 0; top: 0;
+.gem-heart::before {
+  left: 1px; top: 0;
   transform: rotate(-45deg);
   transform-origin: bottom right;
 }
-.gem-pink-heart::after {
-  right: 0; top: 0;
+.gem-heart::after {
+  right: 1px; top: 0;
   transform: rotate(45deg);
   transform-origin: bottom left;
 }
-.gem-pink-sq {
-  width: 34px; height: 34px;
-  border-radius: 4px;
-  background:
-    linear-gradient(135deg, #fce4ec 0%, #f48fb1 30%, #e91e63 60%, #880e4f 100%);
-  box-shadow:
-    inset 2px 2px 6px rgba(255,255,255,0.5),
-    0 0 12px rgba(233,30,99,0.4);
+
+/* 보석 공통 애니메이션 */
+.gem-round, .gem-square, .gem-oval, .gem-cushion, .gem-triangle {
+  animation: gemGlow 5s ease-in-out infinite alternate;
+}
+@keyframes gemGlow {
+  0% { filter: hue-rotate(0deg) brightness(1); }
+  100% { filter: hue-rotate(40deg) brightness(1.15); }
 }
 
-@keyframes gemRotate {
-  from { filter: hue-rotate(0deg) brightness(1.1); }
-  to { filter: hue-rotate(360deg) brightness(1.1); }
-}
-
-/* 하단 팔레트 */
+/* ========== 팔레트 UI ========== */
 #palette {
   position: fixed;
   bottom: 0; left: 0; right: 0;
   z-index: 100;
-  background: rgba(8,12,24,0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-top: 1px solid rgba(255,255,255,0.08);
-  padding: 12px 16px 20px;
-  transition: transform 0.3s;
+  background: rgba(8,12,24,0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding: 12px 16px 22px;
 }
 .palette-title {
-  color: rgba(255,255,255,0.5);
-  font-size: 0.75rem;
+  color: rgba(255,255,255,0.4);
+  font-size: 0.7rem;
   margin-bottom: 10px;
-  letter-spacing: 1px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
 }
 .palette-items {
   display: flex;
-  gap: 14px;
+  gap: 12px;
   overflow-x: auto;
   padding-bottom: 6px;
   align-items: center;
 }
-.palette-items::-webkit-scrollbar { height: 4px; }
-.palette-items::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 2px; }
+.palette-items::-webkit-scrollbar { height: 3px; }
+.palette-items::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 2px; }
 .palette-btn {
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  cursor: grab;
-  padding: 8px 10px;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.08);
-  background: rgba(255,255,255,0.04);
-  transition: background 0.2s, transform 0.15s;
+  cursor: pointer;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.03);
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
   user-select: none;
 }
 .palette-btn:hover {
-  background: rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.08);
   transform: scale(1.05);
+  box-shadow: 0 0 12px rgba(150,130,255,0.15);
 }
-.palette-btn:active { transform: scale(0.95); }
+.palette-btn:active { transform: scale(0.92); }
 .palette-btn .preview {
-  width: 36px; height: 36px;
+  width: 38px; height: 38px;
   display: flex; align-items: center; justify-content: center;
 }
+.palette-btn .preview > * { transform: scale(0.7); }
 .palette-btn .label {
-  font-size: 0.65rem;
-  color: rgba(255,255,255,0.6);
+  font-size: 0.6rem;
+  color: rgba(255,255,255,0.5);
   white-space: nowrap;
 }
 
-/* 안내 오버레이 */
+/* ========== 인트로 ========== */
 #intro-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  background: rgba(6,13,26,0.9);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(6,13,26,0.92);
+  display: flex; align-items: center; justify-content: center;
   animation: fadeIn 0.5s;
 }
 #intro-overlay.hidden { display: none; }
-.intro-box {
-  text-align: center;
-  color: #fff;
-  padding: 40px;
-}
+.intro-box { text-align: center; color: #fff; padding: 40px; }
 .intro-emoji { font-size: 3rem; margin-bottom: 16px; }
 .intro-box h2 { font-size: 1.3rem; font-weight: 600; margin-bottom: 10px; }
-.intro-box p { font-size: 0.9rem; opacity: 0.7; line-height: 1.6; margin-bottom: 24px; }
+.intro-box p { font-size: 0.85rem; opacity: 0.6; line-height: 1.7; margin-bottom: 24px; }
 #intro-close {
-  background: rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.1);
   border: 1px solid rgba(255,255,255,0.2);
   color: #fff;
-  padding: 10px 28px;
+  padding: 10px 30px;
   border-radius: 24px;
   font-size: 0.9rem;
   cursor: pointer;
   transition: background 0.2s;
 }
-#intro-close:hover { background: rgba(255,255,255,0.2); }
+#intro-close:hover { background: rgba(255,255,255,0.18); }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-/* 삭제 존 */
-#delete-zone {
-  position: fixed;
-  bottom: 100px; left: 50%; transform: translateX(-50%);
-  width: 120px; height: 50px;
-  background: rgba(255,60,60,0.2);
-  border: 2px dashed rgba(255,60,60,0.5);
-  border-radius: 14px;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  color: rgba(255,100,100,0.8);
-  font-size: 0.8rem;
-  z-index: 90;
-}
-#delete-zone.active { display: flex; }
 </style>
 </head>
 <body>
 <div id="sky"></div>
 <div id="stars-layer"></div>
-
-<!-- 배치된 오브젝트들이 놓이는 캔버스 -->
 <div id="canvas"></div>
 
 <!-- 하단 도구 팔레트 -->
@@ -331,19 +398,15 @@ html, body {
   <div class="palette-items" id="paletteItems"></div>
 </div>
 
-<!-- 삭제 존 -->
-<div id="delete-zone">놓아서 삭제</div>
-
 <!-- 안내 오버레이 -->
 <div id="intro-overlay">
   <div class="intro-box">
     <div class="intro-emoji">&#127769;</div>
     <h2>나만의 밤하늘을 꾸며보세요</h2>
-    <p>아래 팔레트에서 아이템을 골라<br>하늘 위 원하는 곳에 놓아보세요</p>
+    <p>아래 팔레트에서 아이템을 클릭하면 하늘에 배치됩니다<br>배치된 것을 끌어서 이동하고, 더블클릭하면 삭제돼요</p>
     <button id="intro-close">시작하기</button>
   </div>
 </div>
-
 <script>
 // === 배경 별 생성 ===
 (function createStars() {
@@ -354,7 +417,7 @@ html, body {
     star.style.left = Math.random() * 100 + '%';
     star.style.top = Math.random() * 100 + '%';
     star.style.setProperty('--dur', (2 + Math.random() * 4) + 's');
-    star.style.setProperty('--opa', (0.2 + Math.random() * 0.5).toString());
+    star.style.setProperty('--opa', (0.15 + Math.random() * 0.5).toString());
     var size = 1 + Math.random() * 2;
     star.style.width = size + 'px';
     star.style.height = size + 'px';
@@ -366,16 +429,18 @@ html, body {
 var ITEMS = [
   { id: 'shooting-star', label: '별똥별', html: '<div class="shooting-star"></div>' },
   { id: 'moon', label: '달', html: '<div class="moon"></div>' },
-  { id: 'planet-purple', label: '보라 행성', html: '<div class="planet planet-purple"></div>' },
-  { id: 'planet-blue', label: '파랑 행성', html: '<div class="planet planet-blue planet-ring"></div>' },
-  { id: 'planet-pink', label: '분홍 행성', html: '<div class="planet planet-pink"></div>' },
+  { id: 'planet-holo', label: '홀로 행성', html: '<div class="planet planet-holo"></div>' },
+  { id: 'planet-rose', label: '장미 행성', html: '<div class="planet planet-rose"></div>' },
+  { id: 'planet-ice', label: '얼음 행성', html: '<div class="planet planet-ice"></div>' },
+  { id: 'planet-violet', label: '보라 행성', html: '<div class="planet planet-violet"></div>' },
+  { id: 'planet-saturn', label: '토성', html: '<div class="planet planet-saturn"></div>' },
   { id: 'cloud', label: '구름', html: '<div class="cloud"></div>' },
-  { id: 'gem-mystic', label: '미스틱 원형', html: '<div class="gem-mystic"></div>' },
-  { id: 'gem-mystic-sq', label: '미스틱 사각', html: '<div class="gem-mystic-sq"></div>' },
-  { id: 'gem-mystic-tri', label: '미스틱 삼각', html: '<div class="gem-mystic-tri"></div>' },
-  { id: 'gem-pink', label: '핑크 원형', html: '<div class="gem-pink"></div>' },
-  { id: 'gem-pink-heart', label: '핑크 하트', html: '<div class="gem-pink-heart"></div>' },
-  { id: 'gem-pink-sq', label: '핑크 사각', html: '<div class="gem-pink-sq"></div>' }
+  { id: 'gem-round', label: '원형 보석', html: '<div class="gem-round"></div>' },
+  { id: 'gem-square', label: '사각 보석', html: '<div class="gem-square"></div>' },
+  { id: 'gem-oval', label: '타원 보석', html: '<div class="gem-oval"></div>' },
+  { id: 'gem-cushion', label: '쿠션 보석', html: '<div class="gem-cushion"></div>' },
+  { id: 'gem-triangle', label: '삼각 보석', html: '<div class="gem-triangle"></div>' },
+  { id: 'gem-heart', label: '하트 보석', html: '<div class="gem-heart"></div>' }
 ];
 
 // === 팔레트 렌더링 ===
@@ -388,44 +453,42 @@ ITEMS.forEach(function(item) {
   paletteEl.appendChild(btn);
 });
 
-// === 드래그 & 드롭 로직 ===
+// === 상태 관리 ===
 var canvas = document.getElementById('canvas');
-var deleteZone = document.getElementById('delete-zone');
 var dragging = null;
 var dragOffset = { x: 0, y: 0 };
-var isDraggingFromPalette = false;
-var isDraggingExisting = false;
 
 function getPos(e) {
-  if (e.touches) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+  if (e.touches && e.touches.length) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
   return { x: e.clientX, y: e.clientY };
 }
 
-// 팔레트에서 드래그 시작
-paletteEl.addEventListener('pointerdown', function(e) {
+// === 팔레트 클릭 → 랜덤 배치 ===
+paletteEl.addEventListener('click', function(e) {
   var btn = e.target.closest('.palette-btn');
   if (!btn) return;
-  e.preventDefault();
   var itemId = btn.getAttribute('data-item-id');
   var item = ITEMS.find(function(i) { return i.id === itemId; });
   if (!item) return;
 
-  var pos = getPos(e);
   var el = document.createElement('div');
   el.className = 'placed-item';
   el.innerHTML = item.html;
-  el.style.left = (pos.x - 20) + 'px';
-  el.style.top = (pos.y - 20) + 'px';
-  canvas.appendChild(el);
 
-  dragging = el;
-  dragOffset = { x: 20, y: 20 };
-  isDraggingFromPalette = true;
-  deleteZone.classList.add('active');
-  document.body.style.cursor = 'grabbing';
+  // 팔레트 높이를 뺀 영역에서 랜덤 배치
+  var paletteH = document.getElementById('palette').offsetHeight;
+  var maxX = window.innerWidth - 80;
+  var maxY = window.innerHeight - paletteH - 80;
+  var rx = 40 + Math.random() * maxX;
+  var ry = 40 + Math.random() * maxY;
+  el.style.left = rx + 'px';
+  el.style.top = ry + 'px';
+
+  canvas.appendChild(el);
+  saveState();
 });
 
-// 캔버스 위 기존 아이템 드래그
+// === 캔버스 위 기존 아이템 드래그 ===
 canvas.addEventListener('pointerdown', function(e) {
   var el = e.target.closest('.placed-item');
   if (!el) return;
@@ -434,8 +497,7 @@ canvas.addEventListener('pointerdown', function(e) {
   var rect = el.getBoundingClientRect();
   dragOffset = { x: pos.x - rect.left, y: pos.y - rect.top };
   dragging = el;
-  isDraggingExisting = true;
-  deleteZone.classList.add('active');
+  el.style.zIndex = Date.now();
   document.body.style.cursor = 'grabbing';
 });
 
@@ -447,28 +509,19 @@ document.addEventListener('pointermove', function(e) {
   dragging.style.top = (pos.y - dragOffset.y) + 'px';
 });
 
-document.addEventListener('pointerup', function(e) {
+document.addEventListener('pointerup', function() {
   if (!dragging) return;
-  var pos = getPos(e);
-  var dzRect = deleteZone.getBoundingClientRect();
-
-  // 삭제 존에 놓으면 삭제
-  if (pos.x >= dzRect.left && pos.x <= dzRect.right &&
-      pos.y >= dzRect.top && pos.y <= dzRect.bottom) {
-    dragging.style.animation = 'none';
-    dragging.style.transition = 'transform 0.2s, opacity 0.2s';
-    dragging.style.transform = 'scale(0)';
-    dragging.style.opacity = '0';
-    var el = dragging;
-    setTimeout(function() { el.remove(); }, 200);
-  }
-
   dragging = null;
-  isDraggingFromPalette = false;
-  isDraggingExisting = false;
-  deleteZone.classList.remove('active');
   document.body.style.cursor = '';
   saveState();
+});
+
+// === 더블클릭으로 삭제 ===
+canvas.addEventListener('dblclick', function(e) {
+  var el = e.target.closest('.placed-item');
+  if (!el) return;
+  el.style.animation = 'deleteOut 0.25s forwards';
+  setTimeout(function() { el.remove(); saveState(); }, 250);
 });
 
 // === 인트로 닫기 ===
@@ -480,7 +533,7 @@ if (localStorage.getItem('nightsky-intro-seen')) {
   document.getElementById('intro-overlay').classList.add('hidden');
 }
 
-// === 상태 저장/복원 (localStorage) ===
+// === localStorage 저장/복원 ===
 function saveState() {
   var items = [];
   canvas.querySelectorAll('.placed-item').forEach(function(el) {
