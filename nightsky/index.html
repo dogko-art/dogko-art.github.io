@@ -281,6 +281,31 @@ html, body {
 }
 #intro-close:hover { background: rgba(255,255,255,0.15); }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* ========== 오르골 음악 토글 ========== */
+#musicToggle {
+  position: fixed;
+  top: 16px; right: 16px;
+  z-index: 50;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(6,10,20,0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #fff;
+  font-size: 1.15rem;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s, background 0.2s;
+}
+#musicToggle:hover { background: rgba(255,255,255,0.1); }
+#musicToggle:active { transform: scale(0.9); }
+#musicToggle.playing { animation: musicPulse 1.6s ease-in-out infinite; }
+@keyframes musicPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(180,160,255,0.35); }
+  50% { box-shadow: 0 0 0 8px rgba(180,160,255,0); }
+}
 </style>
 </head>
 <body>
@@ -289,6 +314,8 @@ html, body {
 <div id="dark-layer"></div>
 <div id="glow-layer"></div>
 <div id="canvas"></div>
+
+<button id="musicToggle" title="오르골 음악">🎵</button>
 
 <!-- 하단 팔레트 -->
 <div id="palette">
@@ -457,10 +484,118 @@ canvas.addEventListener('dblclick', function(e) {
   }, 250);
 });
 
+// === 오르골 음악 (반짝반짝 작은별 / Ah! vous dirai-je, Maman — 저작권 없는 전래 멜로디) ===
+var Music = (function(){
+  var NOTE = {
+    C4:261.63, D4:293.66, E4:329.63, F4:349.23, G4:392.00, A4:440.00, B4:493.88, C5:523.25
+  };
+  // [음, 박자] — 1박 = beatSec
+  var MELODY = [
+    [NOTE.C4,1],[NOTE.C4,1],[NOTE.G4,1],[NOTE.G4,1],[NOTE.A4,1],[NOTE.A4,1],[NOTE.G4,2],
+    [NOTE.F4,1],[NOTE.F4,1],[NOTE.E4,1],[NOTE.E4,1],[NOTE.D4,1],[NOTE.D4,1],[NOTE.C4,2],
+    [NOTE.G4,1],[NOTE.G4,1],[NOTE.F4,1],[NOTE.F4,1],[NOTE.E4,1],[NOTE.E4,1],[NOTE.D4,2],
+    [NOTE.G4,1],[NOTE.G4,1],[NOTE.F4,1],[NOTE.F4,1],[NOTE.E4,1],[NOTE.E4,1],[NOTE.D4,2],
+    [NOTE.C4,1],[NOTE.C4,1],[NOTE.G4,1],[NOTE.G4,1],[NOTE.A4,1],[NOTE.A4,1],[NOTE.G4,2],
+    [NOTE.F4,1],[NOTE.F4,1],[NOTE.E4,1],[NOTE.E4,1],[NOTE.D4,1],[NOTE.D4,1],[NOTE.C4,2]
+  ];
+  var BEAT_SEC = 0.42;
+  var LOOP_GAP_SEC = 1.4;
+
+  var ctx = null, master = null, playing = false, timerId = null;
+
+  function ensureCtx(){
+    if (!ctx){
+      ctx = new (window.AudioContext || window.webkitAudioContext)();
+      master = ctx.createGain();
+      master.gain.value = 0.35;
+      master.connect(ctx.destination);
+    }
+    return ctx;
+  }
+
+  function pluck(freq, startTime, beats){
+    var dur = beats * BEAT_SEC;
+    var ring = dur * 2.4; // 오르골 특유의 길게 울리는 잔향
+
+    var osc = ctx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+    var gain = ctx.createGain();
+    gain.gain.setValueAtTime(0, startTime);
+    gain.gain.linearRampToValueAtTime(0.9, startTime + 0.006);
+    gain.gain.exponentialRampToValueAtTime(0.0001, startTime + ring);
+    osc.connect(gain).connect(master);
+    osc.start(startTime);
+    osc.stop(startTime + ring + 0.05);
+
+    // 금속성 배음 (오르골 특유의 반짝이는 느낌)
+    var shimmer = ctx.createOscillator();
+    shimmer.type = 'sine';
+    shimmer.frequency.value = freq * 4;
+    var shimmerGain = ctx.createGain();
+    var shimmerRing = ring * 0.55;
+    shimmerGain.gain.setValueAtTime(0, startTime);
+    shimmerGain.gain.linearRampToValueAtTime(0.12, startTime + 0.004);
+    shimmerGain.gain.exponentialRampToValueAtTime(0.0001, startTime + shimmerRing);
+    shimmer.connect(shimmerGain).connect(master);
+    shimmer.start(startTime);
+    shimmer.stop(startTime + shimmerRing + 0.05);
+  }
+
+  function scheduleLoop(){
+    if (!playing) return;
+    var t = ctx.currentTime + 0.05;
+    var cursor = t;
+    MELODY.forEach(function(note){
+      pluck(note[0], cursor, note[1]);
+      cursor += note[1] * BEAT_SEC;
+    });
+    var totalSec = (cursor - t) + LOOP_GAP_SEC;
+    timerId = setTimeout(scheduleLoop, totalSec * 1000);
+  }
+
+  function start(){
+    ensureCtx();
+    if (ctx.state === 'suspended') ctx.resume();
+    if (playing) return;
+    playing = true;
+    scheduleLoop();
+  }
+
+  function stop(){
+    playing = false;
+    if (timerId) clearTimeout(timerId);
+    if (master){
+      master.gain.setTargetAtTime(0, ctx.currentTime, 0.05);
+      setTimeout(function(){
+        if (ctx) ctx.suspend();
+        if (master) master.gain.setTargetAtTime(0.35, ctx.currentTime, 0.01);
+      }, 150);
+    }
+  }
+
+  return { start: start, stop: stop, isPlaying: function(){ return playing; } };
+})();
+
+var musicBtn = document.getElementById('musicToggle');
+musicBtn.addEventListener('click', function(){
+  if (Music.isPlaying()){
+    Music.stop();
+    musicBtn.textContent = '🔇';
+    musicBtn.classList.remove('playing');
+  } else {
+    Music.start();
+    musicBtn.textContent = '🎵';
+    musicBtn.classList.add('playing');
+  }
+});
+
 // === 인트로 ===
 document.getElementById('intro-close').addEventListener('click', function() {
   document.getElementById('intro-overlay').classList.add('hidden');
   localStorage.setItem('nightsky-intro-seen', '1');
+  Music.start();
+  musicBtn.classList.add('playing');
 });
 if (localStorage.getItem('nightsky-intro-seen')) {
   document.getElementById('intro-overlay').classList.add('hidden');

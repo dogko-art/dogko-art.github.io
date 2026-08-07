@@ -78,9 +78,7 @@ a.back:hover { opacity: 1; }
   z-index: 10;
 }
 .topping-placed.selected {
-  outline: 2px solid rgba(200,140,255,0.7);
-  outline-offset: 4px;
-  border-radius: 6px;
+  outline: none;
 }
 .topping-placed:active { cursor: grabbing; }
 .topping-placed img {
@@ -93,64 +91,38 @@ a.back:hover { opacity: 1; }
   100% { transform: scale(1) rotate(0deg); opacity: 1; }
 }
 
-/* 개별 조절 패널 */
-#adjustPopup {
-  display: none;
-  position: absolute;
-  z-index: 200;
-  background: rgba(20,10,35,0.92);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 14px;
-  padding: 12px 14px;
-  min-width: 160px;
+/* 팔레트 위 조절 바 */
+.tray-adjust {
+  display: flex; align-items: center; justify-content: center;
+  gap: 18px; flex-wrap: wrap;
+  margin-bottom: 10px;
 }
-#adjustPopup.show { display: block; }
-.popup-row {
-  display: flex; align-items: center; gap: 8px;
-  margin-bottom: 8px;
+.tray-adjust-group {
+  display: flex; align-items: center; gap: 6px;
 }
-.popup-row:last-child { margin-bottom: 0; }
-.popup-row label {
-  font-size: 0.65rem;
+.tray-adjust-group label {
+  font-size: 0.68rem;
   color: rgba(255,255,255,0.5);
-  width: 28px;
-  text-align: right;
 }
-.popup-row input[type="range"] {
-  flex: 1;
-  height: 4px;
+.tray-adjust-group input[type="range"] {
+  width: 80px; height: 4px;
   -webkit-appearance: none;
   background: rgba(255,255,255,0.15);
   border-radius: 2px;
   outline: none;
 }
-.popup-row input[type="range"]::-webkit-slider-thumb {
+.tray-adjust-group input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   width: 14px; height: 14px;
   border-radius: 50%;
   background: #c58bf2;
   cursor: pointer;
 }
-.popup-row .val {
+.tray-adjust-group .val {
   font-size: 0.6rem;
   color: rgba(255,255,255,0.4);
-  width: 26px;
+  min-width: 22px;
 }
-.popup-delete {
-  display: block;
-  width: 100%;
-  margin-top: 8px;
-  padding: 5px;
-  border: none;
-  border-radius: 8px;
-  background: rgba(255,80,80,0.2);
-  color: rgba(255,120,120,0.9);
-  font-size: 0.65rem;
-  cursor: pointer;
-}
-.popup-delete:hover { background: rgba(255,80,80,0.35); }
 
 /* 드래그 플로팅 */
 .topping-floating {
@@ -201,19 +173,19 @@ a.back:hover { opacity: 1; }
   border: 1px solid rgba(255,255,255,0.06);
 }
 .tray-item {
-  width: 46px; height: 46px;
   cursor: grab;
   border-radius: 10px;
   padding: 4px;
-  transition: transform 0.15s, background 0.15s;
+  transition: transform 0.15s, background 0.15s, width 0.15s, height 0.15s;
   display: flex; align-items: center; justify-content: center;
 }
-.tray-item:hover { background: rgba(255,180,220,0.12); transform: scale(1.12); }
+.tray-item:hover { background: rgba(255,180,220,0.12); transform: scale(1.08); }
 .tray-item:active { transform: scale(0.9); }
 .tray-item img {
   width: 100%; height: 100%;
   object-fit: contain; pointer-events: none;
   filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2));
+  transition: transform 0.15s;
 }
 
 /* 컨트롤 */
@@ -275,24 +247,22 @@ a.back:hover { opacity: 1; }
     <div id="cakeStage">
       <img class="cake-base-img" src="images/cake.png" alt="케이크">
       <div class="dropzone-hint">여기에 보석을 놓아보세요</div>
-      <!-- 개별 조절 팝업 -->
-      <div id="adjustPopup">
-        <div class="popup-row">
-          <label>크기</label>
-          <input type="range" id="popSize" min="20" max="100" value="45">
-          <span class="val" id="popSizeVal">45</span>
-        </div>
-        <div class="popup-row">
-          <label>각도</label>
-          <input type="range" id="popAngle" min="-180" max="180" value="0">
-          <span class="val" id="popAngleVal">0</span>
-        </div>
-        <button class="popup-delete" id="popDelete">삭제</button>
-      </div>
     </div>
   </div>
 
   <div class="tray-label">보석 팔레트</div>
+  <div class="tray-adjust">
+    <div class="tray-adjust-group">
+      <label>크기</label>
+      <input type="range" id="sizeSlider" min="20" max="90" value="45">
+      <span class="val" id="sizeVal">45</span>
+    </div>
+    <div class="tray-adjust-group">
+      <label>각도</label>
+      <input type="range" id="angleSlider" min="-180" max="180" value="0">
+      <span class="val" id="angleVal">0°</span>
+    </div>
+  </div>
   <div class="tray" id="gemTray"></div>
 
   <div class="controls">
@@ -300,7 +270,7 @@ a.back:hover { opacity: 1; }
     <button class="btn" id="resetBtn">초기화</button>
     <button class="btn" id="congratsBtn">Congrats!</button>
   </div>
-  <p class="hint">토핑을 한번 탭하면 크기/각도 조절, 드래그로 이동</p>
+  <p class="hint">토핑을 더블클릭(더블탭)하면 삭제돼요</p>
 </div>
 
 <div id="fanfareOverlay">
@@ -308,29 +278,53 @@ a.back:hover { opacity: 1; }
 </div>
 <script>
 (function(){
-  var TOPPINGS = [
-    'topping13.png','topping14.png','topping15.png','topping16.png',
-    'topping17.png','topping18.png','topping19.png','topping20.png',
-    'topping21.png','topping22.png','topping23.png','topping24.png',
-    'topping25.png','topping26.png','topping27.png','topping28.png',
-    'topping29.png','topping30.png','topping31.png','topping32.png',
-    'gem1.png','gem3.png','gem4.png','gem5.png','pearl.png'
-  ];
+  var TOPPINGS=['topping13.png','topping14.png','topping15.png','topping16.png','topping17.png','topping18.png','topping19.png','topping20.png','topping21.png','topping22.png','topping23.png','topping24.png','topping25.png','topping26.png','topping27.png','topping28.png','topping29.png','topping30.png','topping31.png','topping32.png','gem1.png','gem3.png','gem4.png','gem5.png','pearl.png'];
+  var stage=document.getElementById('cakeStage'),tray=document.getElementById('gemTray'),resetBtn=document.getElementById('resetBtn'),congratsBtn=document.getElementById('congratsBtn'),musicBtn=document.getElementById('musicBtn');
+  var sizeSlider=document.getElementById('sizeSlider'),angleSlider=document.getElementById('angleSlider'),sizeValEl=document.getElementById('sizeVal'),angleValEl=document.getElementById('angleVal');
 
-  var stage = document.getElementById('cakeStage');
-  var tray = document.getElementById('gemTray');
-  var resetBtn = document.getElementById('resetBtn');
-  var congratsBtn = document.getElementById('congratsBtn');
-  var musicBtn = document.getElementById('musicBtn');
+  function updateTrayPreview(){var s=parseInt(sizeSlider.value),a=parseInt(angleSlider.value);sizeValEl.textContent=s;angleValEl.textContent=a+'\u00B0';tray.querySelectorAll('.tray-item').forEach(function(it){it.style.width=s+'px';it.style.height=s+'px';it.querySelector('img').style.transform='rotate('+a+'deg)';});}
+  sizeSlider.addEventListener('input',updateTrayPreview);
+  angleSlider.addEventListener('input',updateTrayPreview);
 
-  // 개별 조절 팝업
-  var popup = document.getElementById('adjustPopup');
-  var popSize = document.getElementById('popSize');
-  var popAngle = document.getElementById('popAngle');
-  var popSizeVal = document.getElementById('popSizeVal');
-  var popAngleVal = document.getElementById('popAngleVal');
-  var popDelete = document.getElementById('popDelete');
-  var selectedEl = null;
+  var audioCtx=null;function getAudioCtx(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
+  var bgmPlaying=false,bgmInterval=null,bgmGain=null;
+  function startBGM(){var ctx=getAudioCtx();bgmGain=ctx.createGain();bgmGain.gain.value=0.12;bgmGain.connect(ctx.destination);var notes=[261.6,329.6,392,523.3,392,329.6,293.7,349.2,440,523.3,440,349.2,261.6,311.1,392,466.2,392,311.1,293.7,370,440,554.4,440,370];var i=0;function pn(){var o=ctx.createOscillator(),e=ctx.createGain();o.type='sine';o.frequency.value=notes[i%notes.length];e.gain.setValueAtTime(0.3,ctx.currentTime);e.gain.exponentialRampToValueAtTime(0.01,ctx.currentTime+1.2);o.connect(e);e.connect(bgmGain);o.start();o.stop(ctx.currentTime+1.3);i++;}pn();bgmInterval=setInterval(pn,700);bgmPlaying=true;musicBtn.textContent='♪ 끄기';}
+  function stopBGM(){if(bgmInterval)clearInterval(bgmInterval);bgmInterval=null;bgmPlaying=false;musicBtn.textContent='♪ 음악';}
+  musicBtn.addEventListener('click',function(){if(bgmPlaying)stopBGM();else startBGM();});
+
+  function playSparkle(){var ctx=getAudioCtx(),o=ctx.createOscillator(),o2=ctx.createOscillator(),g=ctx.createGain();o.type='sine';o.frequency.setValueAtTime(1200,ctx.currentTime);o.frequency.exponentialRampToValueAtTime(2400,ctx.currentTime+0.08);o2.type='sine';o2.frequency.setValueAtTime(1800,ctx.currentTime);o2.frequency.exponentialRampToValueAtTime(3200,ctx.currentTime+0.1);g.gain.setValueAtTime(0.15,ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.01,ctx.currentTime+0.3);o.connect(g);o2.connect(g);g.connect(ctx.destination);o.start();o2.start();o.stop(ctx.currentTime+0.35);o2.stop(ctx.currentTime+0.35);}
+  function playFanfare(){var ctx=getAudioCtx();[523.3,659.3,784,1047].forEach(function(f,i){var o=ctx.createOscillator(),g=ctx.createGain();o.type='triangle';o.frequency.value=f;g.gain.setValueAtTime(0,ctx.currentTime+i*0.15);g.gain.linearRampToValueAtTime(0.25,ctx.currentTime+i*0.15+0.05);g.gain.exponentialRampToValueAtTime(0.01,ctx.currentTime+i*0.15+0.6);o.connect(g);g.connect(ctx.destination);o.start(ctx.currentTime+i*0.15);o.stop(ctx.currentTime+i*0.15+0.7);});}
+
+  TOPPINGS.forEach(function(file){var item=document.createElement('div');item.className='tray-item';item.style.width='45px';item.style.height='45px';var img=document.createElement('img');img.src='images/'+file;item.appendChild(img);tray.appendChild(item);
+    item.addEventListener('pointerdown',function(e){e.preventDefault();var pid=e.pointerId,size=parseInt(sizeSlider.value),angle=parseInt(angleSlider.value);var clone=document.createElement('div');clone.className='topping-floating';clone.style.width=size+'px';clone.style.height=size+'px';var ci=document.createElement('img');ci.src='images/'+file;ci.style.transform='rotate('+angle+'deg)';clone.appendChild(ci);document.body.appendChild(clone);
+      function mv(x,y){clone.style.left=(x-size/2)+'px';clone.style.top=(y-size/2)+'px';}mv(e.clientX,e.clientY);
+      function om(ev){if(ev.pointerId!==pid)return;mv(ev.clientX,ev.clientY);}
+      function ou(ev){if(ev.pointerId!==pid)return;document.removeEventListener('pointermove',om);document.removeEventListener('pointerup',ou);var r=stage.getBoundingClientRect();if(ev.clientX>=r.left&&ev.clientX<=r.right&&ev.clientY>=r.top&&ev.clientY<=r.bottom)placeTopping(file,ev.clientX-r.left,ev.clientY-r.top);clone.remove();}
+      document.addEventListener('pointermove',om);document.addEventListener('pointerup',ou);});});
+
+  function placeTopping(file,x,y){var size=parseInt(sizeSlider.value),angle=parseInt(angleSlider.value);var el=document.createElement('div');el.className='topping-placed';el.style.width=size+'px';el.style.height=size+'px';el.style.left=(x-size/2)+'px';el.style.top=(y-size/2)+'px';el.style.transform='rotate('+angle+'deg)';var img=document.createElement('img');img.src='images/'+file;el.appendChild(img);stage.appendChild(el);stage.classList.add('has-gems');playSparkle();attachPI(el);}
+
+  function attachPI(el){var lt=0;el.addEventListener('pointerdown',function(e){e.preventDefault();e.stopPropagation();var now=Date.now();if(now-lt<350){el.style.transition='transform .2s,opacity .2s';el.style.transform='scale(0)';el.style.opacity='0';setTimeout(function(){el.remove();if(!stage.querySelector('.topping-placed'))stage.classList.remove('has-gems');},200);return;}lt=now;var pid=e.pointerId,sl=el.offsetLeft,st=el.offsetTop,sx=e.clientX,sy=e.clientY;
+    function om(ev){if(ev.pointerId!==pid)return;el.style.left=(sl+(ev.clientX-sx))+'px';el.style.top=(st+(ev.clientY-sy))+'px';}
+    function ou(ev){if(ev.pointerId!==pid)return;document.removeEventListener('pointermove',om);document.removeEventListener('pointerup',ou);}
+    document.addEventListener('pointermove',om);document.addEventListener('pointerup',ou);});}
+
+  resetBtn.addEventListener('click',function(){stage.querySelectorAll('.topping-placed,.candle-item').forEach(function(g){g.remove();});stage.classList.remove('has-gems');});
+
+  var candleLit=false;
+  congratsBtn.addEventListener('click',function(){var c=document.createElement('div');c.className='candle-item';c.style.width='40px';c.style.height='80px';c.style.left='50%';c.style.top='30px';c.style.transform='translateX(-50%)';var ci=document.createElement('img');ci.src='images/candle.png';c.appendChild(ci);var fl=document.createElement('div');fl.className='candle-flame';c.appendChild(fl);stage.appendChild(c);candleLit=true;startBlow(fl);});
+
+  function startBlow(flame){navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){var ctx=getAudioCtx(),src=ctx.createMediaStreamSource(stream),an=ctx.createAnalyser();an.fftSize=256;src.connect(an);var d=new Uint8Array(an.frequencyBinCount);function ck(){if(!candleLit)return;an.getByteFrequencyData(d);var l=0;for(var i=0;i<10;i++)l+=d[i];l/=10;if(l>120){candleLit=false;flame.classList.add('blown-out');stream.getTracks().forEach(function(t){t.stop();});setTimeout(trigFan,600);}else requestAnimationFrame(ck);}ck();}).catch(function(){setTimeout(function(){if(candleLit){candleLit=false;flame.classList.add('blown-out');setTimeout(trigFan,600);}},3000);});}
+
+  function trigFan(){playFanfare();spawnConf();var ov=document.getElementById('fanfareOverlay');ov.querySelector('.msg').textContent='🎉 Happy Birthday! 🎉';ov.classList.add('show');setTimeout(function(){ov.classList.remove('show');},3000);}
+  function spawnConf(){var cs=['#ff6b9d','#c44dff','#4dc9ff','#ffd700','#4dff88','#ff4d6a','#a855f7'];for(var i=0;i<60;i++){var c=document.createElement('div');c.className='confetti';c.style.left=Math.random()*100+'vw';c.style.top='-10px';c.style.background=cs[Math.floor(Math.random()*cs.length)];c.style.width=(6+Math.random()*8)+'px';c.style.height=(6+Math.random()*8)+'px';c.style.animationDelay=(Math.random()*0.5)+'s';document.body.appendChild(c);setTimeout(function(el){el.remove();}.bind(null,c),4000);}}
+
+  updateTrayPreview();
+})();
+</script>
+
+</body>
+</html>
 
   function showPopup(el) {
     if (selectedEl) selectedEl.classList.remove('selected');
