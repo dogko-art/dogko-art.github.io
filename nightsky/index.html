@@ -282,10 +282,9 @@ html, body {
 #intro-close:hover { background: rgba(255,255,255,0.15); }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-/* ========== 오르골 음악 토글 ========== */
-#musicToggle {
+/* ========== 오른쪽 위 아이콘 버튼 공용 스타일 ========== */
+.icon-btn {
   position: fixed;
-  top: 16px; right: 16px;
   z-index: 50;
   width: 44px; height: 44px;
   border-radius: 50%;
@@ -297,14 +296,33 @@ html, body {
   font-size: 1.15rem;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
+  text-decoration: none;
   transition: transform 0.15s, background 0.2s;
 }
-#musicToggle:hover { background: rgba(255,255,255,0.1); }
-#musicToggle:active { transform: scale(0.9); }
+.icon-btn:hover { background: rgba(255,255,255,0.1); }
+.icon-btn:active { transform: scale(0.9); }
+
+#homeBtn { top: 16px; left: 16px; }
+#captureBtn { top: 16px; right: 70px; }
+#musicToggle { top: 16px; right: 16px; }
 #musicToggle.playing { animation: musicPulse 1.6s ease-in-out infinite; }
 @keyframes musicPulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(180,160,255,0.35); }
   50% { box-shadow: 0 0 0 8px rgba(180,160,255,0); }
+}
+
+/* ========== 캡처 셔터 플래시 ========== */
+#shutterFlash {
+  position: fixed; inset: 0;
+  background: #fff;
+  z-index: 3000;
+  opacity: 0;
+  pointer-events: none;
+}
+#shutterFlash.flash { animation: shutterFlash 0.4s ease-out; }
+@keyframes shutterFlash {
+  0% { opacity: 0.85; }
+  100% { opacity: 0; }
 }
 </style>
 </head>
@@ -315,7 +333,10 @@ html, body {
 <div id="glow-layer"></div>
 <div id="canvas"></div>
 
-<button id="musicToggle" title="오르골 음악">🎵</button>
+<a id="homeBtn" class="icon-btn" href="../" title="홈으로">🏠</a>
+<button id="captureBtn" class="icon-btn" title="화면 저장">📸</button>
+<button id="musicToggle" class="icon-btn" title="오르골 음악">🎵</button>
+<div id="shutterFlash"></div>
 
 <!-- 하단 팔레트 -->
 <div id="palette">
@@ -332,6 +353,7 @@ html, body {
     <button id="intro-close">시작하기</button>
   </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script>
 // === 배경 별 ===
 (function() {
@@ -634,6 +656,50 @@ function loadState() {
   } catch(e) {}
 }
 loadState();
+
+// === 화면 캡처 ===
+var captureBtn = document.getElementById('captureBtn');
+var shutterFlash = document.getElementById('shutterFlash');
+
+function pad2(n){ return (n < 10 ? '0' : '') + n; }
+
+captureBtn.addEventListener('click', function(){
+  if (typeof html2canvas === 'undefined'){
+    alert('캡처 기능을 불러오지 못했어요. 인터넷 연결을 확인하고 다시 시도해주세요.');
+    return;
+  }
+  captureBtn.disabled = true;
+  captureBtn.textContent = '⏳';
+
+  html2canvas(document.body, {
+    backgroundColor: '#060d1a',
+    useCORS: true,
+    ignoreElements: function(el){
+      return el.id === 'homeBtn' || el.id === 'captureBtn' || el.id === 'musicToggle' ||
+             el.id === 'palette' || el.id === 'intro-overlay' || el.id === 'shutterFlash' ||
+             el.id === 'dark-layer';
+    }
+  }).then(function(canvas){
+    shutterFlash.classList.remove('flash');
+    void shutterFlash.offsetWidth;
+    shutterFlash.classList.add('flash');
+
+    var d = new Date();
+    var stamp = d.getFullYear() + pad2(d.getMonth()+1) + pad2(d.getDate()) + '_' + pad2(d.getHours()) + pad2(d.getMinutes());
+    var link = document.createElement('a');
+    link.download = '나만의_밤하늘_' + stamp + '.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+
+    captureBtn.disabled = false;
+    captureBtn.textContent = '📸';
+  }).catch(function(err){
+    console.error(err);
+    alert('캡처에 실패했어요. 다시 시도해주세요.');
+    captureBtn.disabled = false;
+    captureBtn.textContent = '📸';
+  });
+});
 </script>
 
 </body>
