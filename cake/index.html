@@ -146,9 +146,9 @@ a.back:hover { opacity: 1; }
 .candle-item img { width: 100%; height: 100%; object-fit: contain; }
 .candle-flame {
   position: absolute;
-  top: -10px; left: 50%;
+  top: -14px; left: 50%;
   transform: translateX(-50%);
-  width: 12px; height: 18px;
+  width: 16px; height: 24px;
   background: radial-gradient(ellipse at 50% 80%, #fff 0%, #ffe066 30%, #ff8800 70%, transparent 100%);
   border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
   animation: flicker 0.8s ease-in-out infinite alternate;
@@ -312,7 +312,7 @@ a.back:hover { opacity: 1; }
   resetBtn.addEventListener('click',function(){stage.querySelectorAll('.topping-placed,.candle-item').forEach(function(g){g.remove();});stage.classList.remove('has-gems');});
 
   var candleLit=false;
-  congratsBtn.addEventListener('click',function(){var c=document.createElement('div');c.className='candle-item';c.style.width='40px';c.style.height='80px';c.style.left='50%';c.style.top='30px';c.style.transform='translateX(-50%)';var ci=document.createElement('img');ci.src='images/candle.png';c.appendChild(ci);var fl=document.createElement('div');fl.className='candle-flame';c.appendChild(fl);stage.appendChild(c);candleLit=true;startBlow(fl);});
+  congratsBtn.addEventListener('click',function(){var c=document.createElement('div');c.className='candle-item';c.style.width='70px';c.style.height='140px';c.style.left='50%';c.style.bottom='52%';c.style.transform='translateX(-50%)';var ci=document.createElement('img');ci.src='images/candle.png';c.appendChild(ci);var fl=document.createElement('div');fl.className='candle-flame';c.appendChild(fl);stage.appendChild(c);candleLit=true;startBlow(fl);});
 
   function startBlow(flame){navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){var ctx=getAudioCtx(),src=ctx.createMediaStreamSource(stream),an=ctx.createAnalyser();an.fftSize=256;src.connect(an);var d=new Uint8Array(an.frequencyBinCount);function ck(){if(!candleLit)return;an.getByteFrequencyData(d);var l=0;for(var i=0;i<10;i++)l+=d[i];l/=10;if(l>120){candleLit=false;flame.classList.add('blown-out');stream.getTracks().forEach(function(t){t.stop();});setTimeout(trigFan,600);}else requestAnimationFrame(ck);}ck();}).catch(function(){setTimeout(function(){if(candleLit){candleLit=false;flame.classList.add('blown-out');setTimeout(trigFan,600);}},3000);});}
 
