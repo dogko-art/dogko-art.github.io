@@ -74,9 +74,9 @@
     will-change: transform, opacity;
     width: 22px; height: 22px;
     border-radius: 50%;
-    background: radial-gradient(circle at 35% 30%, #fff6a0, #ffd700 40%, #b8860b 90%);
-    box-shadow: inset 0 -2px 4px rgba(0,0,0,0.2), 0 2px 4px rgba(184,134,11,0.3);
-    border: 1.5px solid #daa520;
+    background: radial-gradient(circle at 35% 30%, #fff9c4, #ffd700 35%, #f5a623 70%, #c8860b);
+    box-shadow: inset 0 -3px 5px rgba(0,0,0,0.25), inset 0 3px 4px rgba(255,255,200,0.6), 0 2px 6px rgba(255,180,0,0.4);
+    border: 2px solid #daa520;
   }
 
   .ball-row {
@@ -135,7 +135,7 @@
 
 <script>
 (function(){
-  var EMOJIS = ["🌟","💎","🌟","✨","💎"];
+  var EMOJIS = ["✨","💛","⭐","✨","💫"];
   var btn = document.getElementById("burstBtn");
   var ballRow = document.getElementById("ballRow");
 
@@ -171,7 +171,7 @@
   function spawnParticles(originX, originY){
     var count = 28;
     for (var k = 0; k < count; k++){
-      var isCoin = Math.random() < 0.5;
+      var isCoin = Math.random() < 0.65;
       var el = document.createElement("div");
 
       if (isCoin) {
