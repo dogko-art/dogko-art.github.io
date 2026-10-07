@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>카운터 모션 | 배민 워크체</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
         @font-face {
             font-family: 'BMWoRK';
@@ -122,6 +123,36 @@
             width: 80px;
             accent-color: #ffe135;
             cursor: pointer;
+        }
+
+        /* 범위 안내가 있는 슬라이더 그룹 */
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .slider-group .slider-top-label {
+            font-size: 13px;
+            color: #888;
+        }
+
+        .slider-group .slider-top-label b {
+            color: #ffe135;
+            font-weight: normal;
+        }
+
+        .slider-group .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .slider-group .slider-hint {
+            font-size: 11px;
+            color: #666;
+            white-space: nowrap;
         }
 
         .toggle-btn {
@@ -333,45 +364,43 @@
             text-align: center;
             line-height: 1.4;
             position: relative;
-            overflow: hidden;
             padding: 20px 40px;
+            display: inline-block;
         }
 
+        /* 베이스 글자 (단색) */
         .shimmer-display .shimmer-base {
             position: relative;
             z-index: 1;
-            background-clip: text;
-            -webkit-background-clip: text;
         }
 
+        /* 빛 레이어: 베이스 글자 위에 정확히 포개지며, 글자 모양으로만 clip */
         .shimmer-display .shimmer-light {
             position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(
-                90deg,
-                transparent 0%,
-                transparent 35%,
-                rgba(255, 255, 255, 0.8) 45%,
-                rgba(255, 255, 255, 1) 50%,
-                rgba(255, 255, 255, 0.8) 55%,
-                transparent 65%,
-                transparent 100%
-            );
+            top: 20px;
+            left: 40px;
+            right: 40px;
             z-index: 2;
             pointer-events: none;
-            mix-blend-mode: overlay;
+            white-space: nowrap;
+            /* 빛 그라데이션을 글자 모양으로만 보이게 clip */
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+            background-repeat: no-repeat;
+            /* 그라데이션 위치를 애니메이션 (배경 색/각도/크기는 JS에서 설정) */
+            background-size: 250% 100%;
+            background-position: 150% 0;
         }
 
         .shimmer-display .shimmer-light.animate {
-            animation: shimmerSweep 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            animation: shimmerSweep var(--shimmer-speed, 1.5s) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
         }
 
         @keyframes shimmerSweep {
-            0% { left: -100%; }
-            100% { left: 100%; }
+            0%   { background-position: 150% 0; }
+            100% { background-position: -150% 0; }
         }
 
         /* ==========================================
@@ -565,6 +594,7 @@
             <div class="btn-row">
                 <button class="replay-btn" id="counter-apply-btn">적용 & 재생</button>
                 <button class="export-btn" id="export-webm-btn">WebM 추출 (투명 배경)</button>
+                <button class="export-btn" id="export-png-btn">PNG 시퀀스 추출 (투명 배경)</button>
             </div>
             <div class="export-status" id="export-status"></div>
         </div>
@@ -597,20 +627,42 @@
                 <input type="color" id="shimmer-color-bg" value="#0a0a0f">
             </div>
             <div class="editor-row">
-                <label>빛 두께</label>
-                <input type="range" id="shimmer-width" min="5" max="40" value="15" step="1">
-                <label>빛 속도</label>
-                <input type="range" id="shimmer-speed" min="0.5" max="3" value="1.5" step="0.1">
+                <div class="slider-group">
+                    <span class="slider-top-label">빛 두께 <b id="shimmer-width-val">15</b></span>
+                    <div class="slider-row">
+                        <span class="slider-hint">얇게 ◀</span>
+                        <input type="range" id="shimmer-width" min="5" max="40" value="15" step="1">
+                        <span class="slider-hint">▶ 두껍게</span>
+                    </div>
+                </div>
+                <div class="slider-group">
+                    <span class="slider-top-label">빛 각도 <b id="shimmer-angle-val">110°</b></span>
+                    <div class="slider-row">
+                        <span class="slider-hint">↘ 기울기 ◀</span>
+                        <input type="range" id="shimmer-angle" min="0" max="180" value="110" step="5">
+                        <span class="slider-hint">▶ 기울기 ↗</span>
+                    </div>
+                </div>
+                <div class="slider-group">
+                    <span class="slider-top-label">빛 속도 <b id="shimmer-speed-val">1.5초</b></span>
+                    <div class="slider-row">
+                        <span class="slider-hint">빠르게 ◀</span>
+                        <input type="range" id="shimmer-speed" min="0.5" max="3" value="1.5" step="0.1">
+                        <span class="slider-hint">▶ 느리게</span>
+                    </div>
+                </div>
             </div>
             <div class="btn-row">
                 <button class="replay-btn" id="shimmer-play-btn">재생</button>
                 <button class="replay-btn" id="shimmer-loop-btn">반복 재생</button>
+                <button class="export-btn" id="shimmer-export-png-btn">PNG 시퀀스 추출 (투명 배경)</button>
             </div>
+            <div class="export-status" id="shimmer-export-status"></div>
         </div>
 
         <div class="shimmer-display" id="shimmer-display">
             <span class="shimmer-base">15개, 3,000원</span>
-            <div class="shimmer-light"></div>
+            <span class="shimmer-light">15개, 3,000원</span>
         </div>
 
         <p class="section-desc">글자 표면을 빛이 삭~ 지나가는 shimmer 효과</p>
@@ -838,6 +890,133 @@
         });
 
         // ==========================================
+        // ===== PNG 시퀀스 추출 공통 유틸 =====
+        // ==========================================
+
+        // 폰트를 base64 data URL로 인라인 (SVG foreignObject 렌더링에 필요)
+        let _cachedFontCss = null;
+        async function getInlineFontCss() {
+            if (_cachedFontCss !== null) return _cachedFontCss;
+            try {
+                const res = await fetch('./BAEMINWORK.otf');
+                const buf = await res.arrayBuffer();
+                // ArrayBuffer -> base64
+                let binary = '';
+                const bytes = new Uint8Array(buf);
+                const chunkSize = 0x8000;
+                for (let i = 0; i < bytes.length; i += chunkSize) {
+                    binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
+                }
+                const b64 = btoa(binary);
+                _cachedFontCss = `@font-face{font-family:'BMWoRK';src:url(data:font/otf;base64,${b64}) format('opentype');}`;
+            } catch (e) {
+                console.warn('폰트 인라인 실패, 시스템 폰트로 대체됩니다.', e);
+                _cachedFontCss = '';
+            }
+            return _cachedFontCss;
+        }
+
+        // display 요소의 특정 시점 상태를 PNG blob으로 캡처
+        function captureElementToPng(display, rect, scale, fontCss) {
+            return new Promise((resolve) => {
+                const canvas = document.createElement('canvas');
+                canvas.width = Math.round(rect.width * scale);
+                canvas.height = Math.round(rect.height * scale);
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                const cloneHtml = display.outerHTML;
+                const svgData =
+                    `<svg xmlns="http://www.w3.org/2000/svg" width="${rect.width}" height="${rect.height}">` +
+                    `<defs><style>${fontCss}</style></defs>` +
+                    `<foreignObject width="100%" height="100%">` +
+                    `<div xmlns="http://www.w3.org/1999/xhtml" style="width:${rect.width}px;height:${rect.height}px;">${cloneHtml}</div>` +
+                    `</foreignObject></svg>`;
+
+                const img = new Image();
+                const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+                const svgUrl = URL.createObjectURL(svgBlob);
+                img.onload = () => {
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    URL.revokeObjectURL(svgUrl);
+                    canvas.toBlob((blob) => resolve(blob), 'image/png');
+                };
+                img.onerror = () => {
+                    URL.revokeObjectURL(svgUrl);
+                    resolve(null);
+                };
+                img.src = svgUrl;
+            });
+        }
+
+        // 모션을 재생하면서 fps 간격으로 프레임을 캡처 → ZIP 다운로드
+        async function exportPngSequence(opts) {
+            const { display, triggerFn, duration, fps, scale, btn, status, filePrefix } = opts;
+            btn.disabled = true;
+            status.textContent = '폰트 준비 중...';
+
+            const fontCss = await getInlineFontCss();
+            const rect = display.getBoundingClientRect();
+            const frameCount = Math.round(duration / 1000 * fps);
+            const frameInterval = 1000 / fps;
+
+            const zip = new JSZip();
+            const folder = zip.folder(filePrefix);
+
+            // 모션 재생 시작
+            triggerFn();
+            const startTime = performance.now();
+
+            for (let i = 0; i < frameCount; i++) {
+                const targetTime = startTime + i * frameInterval;
+                // 해당 프레임 시점까지 대기
+                await new Promise((r) => {
+                    function wait() {
+                        if (performance.now() >= targetTime) r();
+                        else requestAnimationFrame(wait);
+                    }
+                    wait();
+                });
+
+                const blob = await captureElementToPng(display, rect, scale, fontCss);
+                if (blob) {
+                    const name = String(i).padStart(4, '0') + '.png';
+                    folder.file(name, blob);
+                }
+                status.textContent = `프레임 캡처 중... ${i + 1}/${frameCount}`;
+            }
+
+            status.textContent = 'ZIP 생성 중...';
+            const content = await zip.generateAsync({ type: 'blob' }, (meta) => {
+                status.textContent = `ZIP 압축 중... ${Math.round(meta.percent)}%`;
+            });
+
+            const url = URL.createObjectURL(content);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${filePrefix}-png-sequence.zip`;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            btn.disabled = false;
+            status.textContent = `PNG 시퀀스 다운로드 완료! (${frameCount}프레임 @ ${fps}fps, 투명 배경)`;
+        }
+
+        // 슬롯 카운터 PNG 시퀀스
+        document.getElementById('export-png-btn').addEventListener('click', () => {
+            exportPngSequence({
+                display: document.getElementById('counter-display'),
+                triggerFn: triggerCounter,
+                duration: 4000,
+                fps: 30,
+                scale: 2,
+                btn: document.getElementById('export-png-btn'),
+                status: document.getElementById('export-status'),
+                filePrefix: 'counter'
+            });
+        });
+
+        // ==========================================
         // ===== SECTION 2: 빛 스와이프 (Shimmer) =====
         // ==========================================
         let shimmerLoopInterval = null;
@@ -848,28 +1027,52 @@
             const bgColor = document.getElementById('shimmer-color-bg').value;
             const display = document.getElementById('shimmer-display');
             const base = display.querySelector('.shimmer-base');
+            const light = display.querySelector('.shimmer-light');
 
             base.textContent = text;
             base.style.color = textColor;
-            display.style.background = 'transparent';
+            // 빛 레이어도 같은 글자를 담아야 글자 모양으로 clip됨
+            light.textContent = text;
             document.getElementById('section-shimmer').style.background = bgColor;
+
+            // 색상이 바뀌면 빛 그라데이션도 다시 세팅 (멈춤 상태 기준)
+            setupShimmerGradient();
+        }
+
+        // 빛 그라데이션(색/각도/두께)만 설정 — 글자 모양으로 clip되는 background에 적용
+        function setupShimmerGradient() {
+            const lightColor = document.getElementById('shimmer-color-light').value;
+            const width = parseInt(document.getElementById('shimmer-width').value);
+            const angle = parseInt(document.getElementById('shimmer-angle').value);
+            const light = document.getElementById('shimmer-display').querySelector('.shimmer-light');
+
+            // 밴드 두께: width(%) 기준으로 중심 50% 주변에 빛 띠 생성
+            const halfW = width / 2;
+            const s0 = Math.max(0, 50 - halfW);
+            const s1 = Math.max(0, 50 - halfW / 2);
+            const s2 = Math.min(100, 50 + halfW / 2);
+            const s3 = Math.min(100, 50 + halfW);
+
+            light.style.backgroundImage = `linear-gradient(${angle}deg,`
+                + ` transparent 0%,`
+                + ` transparent ${s0}%,`
+                + ` ${lightColor}cc ${s1}%,`
+                + ` ${lightColor} 50%,`
+                + ` ${lightColor}cc ${s2}%,`
+                + ` transparent ${s3}%,`
+                + ` transparent 100%)`;
         }
 
         function triggerShimmer() {
             updateShimmerDisplay();
-            const lightColor = document.getElementById('shimmer-color-light').value;
-            const width = document.getElementById('shimmer-width').value;
             const speed = document.getElementById('shimmer-speed').value;
-            const display = document.getElementById('shimmer-display');
-            const light = display.querySelector('.shimmer-light');
+            const light = document.getElementById('shimmer-display').querySelector('.shimmer-light');
 
-            // 빛 색상과 두께 설정
-            const halfW = parseInt(width) / 2;
-            light.style.background = `linear-gradient(90deg, transparent 0%, transparent ${50 - halfW}%, ${lightColor}cc ${50 - halfW/2}%, ${lightColor} 50%, ${lightColor}cc ${50 + halfW/2}%, transparent ${50 + halfW}%, transparent 100%)`;
+            setupShimmerGradient();
 
             // 리셋 & 재생
             light.classList.remove('animate');
-            light.style.animationDuration = speed + 's';
+            light.style.setProperty('--shimmer-speed', speed + 's');
             void light.offsetWidth;
             light.classList.add('animate');
         }
@@ -892,9 +1095,46 @@
             }
         });
 
-        // 실시간 색상 반영
+        // 실시간 색상/텍스트 반영
+        document.getElementById('shimmer-text-input').addEventListener('input', updateShimmerDisplay);
         document.getElementById('shimmer-color-text').addEventListener('input', updateShimmerDisplay);
         document.getElementById('shimmer-color-bg').addEventListener('input', updateShimmerDisplay);
+        // 빛 색상/각도/두께 실시간 반영
+        document.getElementById('shimmer-color-light').addEventListener('input', setupShimmerGradient);
+        document.getElementById('shimmer-angle').addEventListener('input', setupShimmerGradient);
+        document.getElementById('shimmer-width').addEventListener('input', setupShimmerGradient);
+
+        // 슬라이더 현재 값 표시
+        function updateShimmerSliderLabels() {
+            document.getElementById('shimmer-width-val').textContent = document.getElementById('shimmer-width').value;
+            document.getElementById('shimmer-angle-val').textContent = document.getElementById('shimmer-angle').value + '°';
+            document.getElementById('shimmer-speed-val').textContent = parseFloat(document.getElementById('shimmer-speed').value).toFixed(1) + '초';
+        }
+        document.getElementById('shimmer-width').addEventListener('input', updateShimmerSliderLabels);
+        document.getElementById('shimmer-angle').addEventListener('input', updateShimmerSliderLabels);
+        document.getElementById('shimmer-speed').addEventListener('input', updateShimmerSliderLabels);
+        updateShimmerSliderLabels();
+
+        // 빛 스와이프 PNG 시퀀스
+        document.getElementById('shimmer-export-png-btn').addEventListener('click', () => {
+            // 반복 재생 중이면 중단
+            if (shimmerLoopInterval) {
+                clearInterval(shimmerLoopInterval);
+                shimmerLoopInterval = null;
+                document.getElementById('shimmer-loop-btn').classList.remove('active');
+            }
+            const speed = parseFloat(document.getElementById('shimmer-speed').value);
+            exportPngSequence({
+                display: document.getElementById('shimmer-display'),
+                triggerFn: triggerShimmer,
+                duration: speed * 1000 + 300, // 빛이 지나가는 시간 + 여유
+                fps: 30,
+                scale: 2,
+                btn: document.getElementById('shimmer-export-png-btn'),
+                status: document.getElementById('shimmer-export-status'),
+                filePrefix: 'shimmer'
+            });
+        });
 
         // ==========================================
         // ===== SECTION 3: 후광 (Radiance) =====
