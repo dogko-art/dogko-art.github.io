@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>카운터 모션 | 배민 워크체</title>
+    <style>
+        @font-face {
+            font-family: 'BMWoRK';
+            src: url('./BAEMINWORK.otf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'BMWoRK', sans-serif;
+            background: #0d0d1a;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* ==========================================
+           공통 섹션 스타일
+           ========================================== */
+        .motion-section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 60px 40px;
+            position: relative;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .section-title {
+            font-size: 14px;
+            color: #666;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+        }
+
+        /* ==========================================
+           공통 에디터 스타일
+           ========================================== */
+        .counter-editor {
+            margin-bottom: 40px;
+            padding: 24px 32px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            align-items: center;
+        }
+
+        .editor-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .editor-row label {
+            font-size: 13px;
+            color: #888;
+        }
+
+        .editor-row input[type="text"],
+        .editor-row input[type="number"] {
+            font-family: 'BMWoRK', sans-serif;
+            font-size: 16px;
+            padding: 8px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.06);
+            color: #fff;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .editor-row input[type="text"]:focus,
+        .editor-row input[type="number"]:focus {
+            border-color: #ffe135;
+        }
+
+        .editor-row input[type="number"] {
+            width: 90px;
+        }
+
+        .editor-row .unit-input {
+            width: 50px;
+        }
+
+        .editor-row .text-input {
+            width: 100px;
+        }
+
+        .editor-row input[type="color"] {
+            width: 36px;
+            height: 36px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: transparent;
+            cursor: pointer;
+            padding: 2px;
+        }
+
+        .editor-row input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+        .editor-row input[type="color"]::-webkit-color-swatch { border: none; border-radius: 6px; }
+
+        .editor-row input[type="range"] {
+            width: 80px;
+            accent-color: #ffe135;
+            cursor: pointer;
+        }
+
+        .toggle-btn {
+            padding: 6px 14px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: transparent;
+            color: #888;
+            font-family: 'BMWoRK', sans-serif;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .toggle-btn:hover {
+            border-color: rgba(255, 255, 255, 0.4);
+            color: #fff;
+        }
+
+        .toggle-btn.active {
+            border-color: #ffe135;
+            color: #ffe135;
+            background: rgba(255, 225, 53, 0.1);
+        }
+
+        .align-btn-group {
+            display: flex;
+            gap: 4px;
+        }
+
+        .align-btn {
+            width: 36px;
+            height: 36px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: transparent;
+            color: #888;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .align-btn:hover {
+            border-color: rgba(255, 255, 255, 0.4);
+            color: #fff;
+        }
+
+        .align-btn.active {
+            border-color: #ffe135;
+            color: #ffe135;
+            background: rgba(255, 225, 53, 0.1);
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .replay-btn, .export-btn {
+            padding: 12px 28px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: transparent;
+            color: #fff;
+            font-family: 'BMWoRK', sans-serif;
+            font-size: 14px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .replay-btn:hover, .export-btn:hover {
+            border-color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .export-btn {
+            border-color: rgba(78, 205, 196, 0.4);
+            color: #4ecdc4;
+        }
+
+        .export-btn:hover {
+            border-color: #4ecdc4;
+            background: rgba(78, 205, 196, 0.1);
+        }
+
+        .export-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .export-status {
+            margin-top: 12px;
+            font-size: 13px;
+            color: #4ecdc4;
+            text-align: center;
+            min-height: 20px;
+        }
+
+        .section-desc {
+            margin-top: 30px;
+            font-size: 15px;
+            color: #888;
+            text-align: center;
+            max-width: 500px;
+            line-height: 1.6;
+        }
+
+        /* ==========================================
+           SECTION 1: 카운터/슬롯머신
+           ========================================== */
+        #section-counter {
+            background: linear-gradient(180deg, #0d0d1a 0%, #1a0d1a 100%);
+        }
+
+        .counter-text {
+            font-size: clamp(36px, 6vw, 80px);
+            letter-spacing: -2px;
+            line-height: 1.6;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .counter-text.align-left .counter-line { justify-content: flex-start; }
+        .counter-text.align-center .counter-line { justify-content: center; }
+        .counter-text.align-right .counter-line { justify-content: flex-end; }
+
+        .counter-line {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            height: 1.4em;
+        }
+
+        .counter-digit {
+            display: inline-block;
+            position: relative;
+            overflow: hidden;
+            height: 1.4em;
+            width: 0.7em;
+            vertical-align: bottom;
+        }
+
+        .counter-digit .digit-roll {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+        }
+
+        .counter-digit .digit-roll span {
+            display: block;
+            height: 1.4em;
+            line-height: 1.4em;
+            text-align: center;
+        }
+
+        .counter-comma {
+            display: inline-block;
+            width: 0.3em;
+            text-align: center;
+            height: 1.4em;
+            line-height: 1.4em;
+        }
+
+        .vertical-label {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.42em;
+            line-height: 1.15;
+            height: 1.4em;
+            position: relative;
+        }
+
+        .vertical-label span {
+            display: block;
+            font-size: inherit;
+        }
+
+        .vertical-label-single {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.42em;
+            line-height: 1.15;
+            height: 1.4em;
+            position: relative;
+        }
+
+        /* ==========================================
+           SECTION 2: 빛 스와이프 (Shimmer)
+           ========================================== */
+        #section-shimmer {
+            background: #0a0a0f;
+        }
+
+        .shimmer-display {
+            font-size: clamp(36px, 7vw, 100px);
+            letter-spacing: -2px;
+            text-align: center;
+            line-height: 1.4;
+            position: relative;
+            overflow: hidden;
+            padding: 20px 40px;
+        }
+
+        .shimmer-display .shimmer-base {
+            position: relative;
+            z-index: 1;
+            background-clip: text;
+            -webkit-background-clip: text;
+        }
+
+        .shimmer-display .shimmer-light {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent 0%,
+                transparent 35%,
+                rgba(255, 255, 255, 0.8) 45%,
+                rgba(255, 255, 255, 1) 50%,
+                rgba(255, 255, 255, 0.8) 55%,
+                transparent 65%,
+                transparent 100%
+            );
+            z-index: 2;
+            pointer-events: none;
+            mix-blend-mode: overlay;
+        }
+
+        .shimmer-display .shimmer-light.animate {
+            animation: shimmerSweep 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+
+        @keyframes shimmerSweep {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        /* ==========================================
+           SECTION 3: 후광 (Radiance)
+           ========================================== */
+        #section-radiance {
+            background: #08080f;
+        }
+
+        .radiance-display {
+            font-size: clamp(36px, 7vw, 100px);
+            letter-spacing: -2px;
+            text-align: center;
+            line-height: 1.4;
+            position: relative;
+            padding: 40px;
+        }
+
+        .radiance-display .radiance-text {
+            position: relative;
+            z-index: 2;
+            transition: text-shadow 0.3s;
+        }
+
+        .radiance-display .radiance-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        .radiance-display .radiance-glow.animate {
+            animation: radianceExpand 1.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+
+        @keyframes radianceExpand {
+            0% {
+                width: 0;
+                height: 0;
+                opacity: 0.9;
+            }
+            50% {
+                opacity: 0.7;
+            }
+            100% {
+                width: 250%;
+                height: 600%;
+                opacity: 0;
+            }
+        }
+
+        .radiance-display .radiance-rays {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            overflow: visible;
+        }
+
+        .radiance-display .ray {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 3px;
+            height: 0;
+            transform-origin: center top;
+            opacity: 0;
+            border-radius: 2px;
+        }
+
+        .radiance-display .ray.animate {
+            animation: rayShoot 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+
+        @keyframes rayShoot {
+            0% {
+                height: 0;
+                opacity: 0.9;
+            }
+            40% {
+                height: 120px;
+                opacity: 0.8;
+            }
+            100% {
+                height: 200px;
+                opacity: 0;
+            }
+        }
+
+        /* ==========================================
+           네비게이션
+           ========================================== */
+        .page-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 16px 40px;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            z-index: 1000;
+            background: rgba(10, 10, 15, 0.85);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .page-nav a {
+            color: #888;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+
+        .page-nav a:hover {
+            color: #fff;
+        }
+
+        @media (max-width: 768px) {
+            .motion-section { padding: 40px 16px; }
+            .counter-editor { padding: 16px; }
+            .editor-row { gap: 6px; }
+            .page-nav { padding: 12px 16px; gap: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 네비게이션 -->
+    <nav class="page-nav">
+        <a href="#section-counter">01 슬롯 카운터</a>
+        <a href="#section-shimmer">02 빛 스와이프</a>
+        <a href="#section-radiance">03 후광</a>
+    </nav>
+
+    <!-- ==========================================
+         SECTION 1: 슬롯 카운터
+         ========================================== -->
+    <section class="motion-section" id="section-counter">
+        <span class="section-title">01 / Slot Counter</span>
+
+        <div class="counter-editor">
+            <div class="editor-row">
+                <label>첫 번째 숫자</label>
+                <input type="number" id="num1-input" value="15" min="1" max="9999">
+                <label>단위</label>
+                <input type="text" id="unit1-input" value="개" maxlength="4" class="unit-input">
+                <label>텍스트</label>
+                <input type="text" id="text1-input" value="브랜드" maxlength="10" class="text-input">
+                <button class="toggle-btn" id="toggle-yak">'약' 추가</button>
+            </div>
+            <div class="editor-row">
+                <label>두 번째 숫자</label>
+                <input type="number" id="num2-input" value="3000" min="1" max="99999">
+                <label>단위</label>
+                <input type="text" id="unit2-input" value="원" maxlength="4" class="unit-input">
+                <label>텍스트</label>
+                <input type="text" id="text2-input" value="할인!" maxlength="10" class="text-input">
+                <button class="toggle-btn active" id="toggle-max">'최대' 추가</button>
+            </div>
+            <div class="editor-row">
+                <label>'약' 위치</label>
+                <input type="range" id="yak-offset" min="-20" max="20" value="0" step="1">
+                <label>'최대' 위치</label>
+                <input type="range" id="max-offset" min="-20" max="20" value="0" step="1">
+            </div>
+            <div class="editor-row">
+                <label>숫자 색상</label>
+                <input type="color" id="color-number" value="#ffe135">
+                <label>텍스트 색상</label>
+                <input type="color" id="color-text" value="#ffffff">
+                <label>배경 색상</label>
+                <input type="color" id="color-bg" value="#0d0d1a">
+                <label>정렬</label>
+                <div class="align-btn-group">
+                    <button class="align-btn" data-align="left" title="좌측 정렬">&#9776;</button>
+                    <button class="align-btn active" data-align="center" title="중앙 정렬">&#9866;</button>
+                    <button class="align-btn" data-align="right" title="우측 정렬">&#9783;</button>
+                </div>
+            </div>
+            <div class="btn-row">
+                <button class="replay-btn" id="counter-apply-btn">적용 & 재생</button>
+                <button class="export-btn" id="export-webm-btn">WebM 추출 (투명 배경)</button>
+            </div>
+            <div class="export-status" id="export-status"></div>
+        </div>
+
+        <div class="counter-text align-center" id="counter-display">
+            <div class="counter-line" id="line1"></div>
+            <div class="counter-line" id="line2"></div>
+        </div>
+
+        <p class="section-desc">미터기가 돌아가다 딱 멈추며 숫자가 등장하는 카운터 모션</p>
+    </section>
+
+    <!-- ==========================================
+         SECTION 2: 빛 스와이프 (Shimmer)
+         ========================================== -->
+    <section class="motion-section" id="section-shimmer">
+        <span class="section-title">02 / Light Shimmer</span>
+
+        <div class="counter-editor">
+            <div class="editor-row">
+                <label>텍스트</label>
+                <input type="text" id="shimmer-text-input" value="15개, 3,000원" class="text-input" style="width:200px">
+            </div>
+            <div class="editor-row">
+                <label>글자 색상</label>
+                <input type="color" id="shimmer-color-text" value="#ffe135">
+                <label>빛 색상</label>
+                <input type="color" id="shimmer-color-light" value="#ffffff">
+                <label>배경 색상</label>
+                <input type="color" id="shimmer-color-bg" value="#0a0a0f">
+            </div>
+            <div class="editor-row">
+                <label>빛 두께</label>
+                <input type="range" id="shimmer-width" min="5" max="40" value="15" step="1">
+                <label>빛 속도</label>
+                <input type="range" id="shimmer-speed" min="0.5" max="3" value="1.5" step="0.1">
+            </div>
+            <div class="btn-row">
+                <button class="replay-btn" id="shimmer-play-btn">재생</button>
+                <button class="replay-btn" id="shimmer-loop-btn">반복 재생</button>
+            </div>
+        </div>
+
+        <div class="shimmer-display" id="shimmer-display">
+            <span class="shimmer-base">15개, 3,000원</span>
+            <div class="shimmer-light"></div>
+        </div>
+
+        <p class="section-desc">글자 표면을 빛이 삭~ 지나가는 shimmer 효과</p>
+    </section>
+
+    <!-- ==========================================
+         SECTION 3: 후광 (Radiance)
+         ========================================== -->
+    <section class="motion-section" id="section-radiance">
+        <span class="section-title">03 / Radiance</span>
+
+        <div class="counter-editor">
+            <div class="editor-row">
+                <label>텍스트</label>
+                <input type="text" id="radiance-text-input" value="15개, 3,000원" class="text-input" style="width:200px">
+            </div>
+            <div class="editor-row">
+                <label>글자 색상</label>
+                <input type="color" id="radiance-color-text" value="#ffffff">
+                <label>후광 색상</label>
+                <input type="color" id="radiance-color-glow" value="#ffe135">
+                <label>배경 색상</label>
+                <input type="color" id="radiance-color-bg" value="#08080f">
+            </div>
+            <div class="editor-row">
+                <label>광선 수</label>
+                <input type="range" id="radiance-rays" min="6" max="30" value="16" step="1">
+                <label>광선 길이</label>
+                <input type="range" id="radiance-length" min="50" max="300" value="150" step="10">
+            </div>
+            <div class="btn-row">
+                <button class="replay-btn" id="radiance-play-btn">재생</button>
+                <button class="replay-btn" id="radiance-loop-btn">반복 재생</button>
+            </div>
+        </div>
+
+        <div class="radiance-display" id="radiance-display">
+            <span class="radiance-text">15개, 3,000원</span>
+            <div class="radiance-glow"></div>
+            <div class="radiance-rays"></div>
+        </div>
+
+        <p class="section-desc">글자에서 후광이 쫘악 뻗어나가는 radiance 효과</p>
+    </section>
+
+    <script>
+        // ==========================================
+        // ===== SECTION 1: 슬롯 카운터 =====
+        // ==========================================
+        let showYak = false;
+        let showMax = true;
+        let currentAlign = 'center';
+
+        document.getElementById('toggle-yak').addEventListener('click', (e) => {
+            showYak = !showYak;
+            e.target.classList.toggle('active', showYak);
+            e.target.textContent = showYak ? "'약' 제거" : "'약' 추가";
+            triggerCounter();
+        });
+
+        document.getElementById('toggle-max').addEventListener('click', (e) => {
+            showMax = !showMax;
+            e.target.classList.toggle('active', showMax);
+            e.target.textContent = showMax ? "'최대' 제거" : "'최대' 추가";
+            triggerCounter();
+        });
+
+        document.getElementById('yak-offset').addEventListener('input', () => {
+            const label = document.querySelector('.yak-label');
+            if (label) label.style.marginRight = document.getElementById('yak-offset').value + 'px';
+        });
+
+        document.getElementById('max-offset').addEventListener('input', () => {
+            const label = document.querySelector('.max-label');
+            if (label) label.style.marginRight = document.getElementById('max-offset').value + 'px';
+        });
+
+        document.querySelectorAll('.align-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.align-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentAlign = btn.dataset.align;
+                document.getElementById('counter-display').className = 'counter-text align-' + currentAlign;
+            });
+        });
+
+        function applyCounterColors() {
+            const numColor = document.getElementById('color-number').value;
+            const textColor = document.getElementById('color-text').value;
+            const bgColor = document.getElementById('color-bg').value;
+            document.getElementById('section-counter').style.background = bgColor;
+            document.querySelectorAll('#counter-display .counter-digit, #counter-display .counter-comma, #counter-display .counter-unit, #counter-display .vertical-label, #counter-display .vertical-label-single').forEach(el => {
+                el.style.color = numColor;
+            });
+            document.querySelectorAll('#counter-display .text1-display, #counter-display .text2-display').forEach(el => {
+                el.style.color = textColor;
+            });
+        }
+
+        function renderCounterDisplay() {
+            const num1 = parseInt(document.getElementById('num1-input').value) || 15;
+            const unit1 = document.getElementById('unit1-input').value || '개';
+            const text1 = document.getElementById('text1-input').value || '브랜드';
+            const num2 = parseInt(document.getElementById('num2-input').value) || 3000;
+            const unit2 = document.getElementById('unit2-input').value || '원';
+            const text2 = document.getElementById('text2-input').value || '할인!';
+            const yakOffset = document.getElementById('yak-offset').value;
+            const maxOffset = document.getElementById('max-offset').value;
+
+            const line1 = document.getElementById('line1');
+            const digits1 = String(num1).split('');
+            let html1 = '';
+            if (showYak) {
+                html1 += `<div class="vertical-label-single yak-label" style="margin-right:${yakOffset}px"><span>약</span></div>`;
+            }
+            digits1.forEach((d, i) => {
+                html1 += `<div class="counter-digit" data-target-digit="${d}" data-delay="${i}"><div class="digit-roll"><span>0</span></div></div>`;
+            });
+            html1 += `<span class="counter-unit unit1-display">${unit1}</span>`;
+            html1 += `<span>&nbsp;</span>`;
+            html1 += `<span class="text1-display">${text1}</span>`;
+            line1.innerHTML = html1;
+
+            const line2 = document.getElementById('line2');
+            const formatted2 = num2.toLocaleString();
+            let html2 = '';
+            if (showMax) {
+                html2 += `<div class="vertical-label max-label" style="margin-right:${maxOffset}px"><span>최</span><span>대</span></div>`;
+            }
+            let digitIndex = 0;
+            for (let i = 0; i < formatted2.length; i++) {
+                const ch = formatted2[i];
+                if (ch === ',') {
+                    html2 += `<span class="counter-comma">,</span>`;
+                } else {
+                    const delay = digits1.length + digitIndex;
+                    html2 += `<div class="counter-digit" data-target-digit="${ch}" data-delay="${delay}"><div class="digit-roll"><span>0</span></div></div>`;
+                    digitIndex++;
+                }
+            }
+            html2 += `<span class="counter-unit unit2-display">${unit2}</span>`;
+            html2 += `<span>&nbsp;</span>`;
+            html2 += `<span class="text2-display">${text2}</span>`;
+            line2.innerHTML = html2;
+        }
+
+        function triggerCounter() {
+            renderCounterDisplay();
+            applyCounterColors();
+            const digits = document.querySelectorAll('#counter-display .counter-digit');
+            digits.forEach((digitEl) => {
+                const target = parseInt(digitEl.dataset.targetDigit);
+                const delay = parseInt(digitEl.dataset.delay) * 200;
+                const roll = digitEl.querySelector('.digit-roll');
+                const spins = 2 + Math.floor(Math.random() * 2);
+                let steps = [];
+                for (let s = 0; s < spins; s++) {
+                    for (let n = 0; n <= 9; n++) steps.push(n);
+                }
+                for (let n = 0; n <= target; n++) steps.push(n);
+                roll.innerHTML = steps.map(n => `<span>${n}</span>`).join('');
+                roll.style.transform = 'translateY(0)';
+                roll.style.transition = 'none';
+                setTimeout(() => {
+                    requestAnimationFrame(() => {
+                        const targetY = -((steps.length - 1) * 1.4);
+                        const duration = Math.min(2, Math.max(1, steps.length * 0.04));
+                        roll.style.transition = `transform ${duration}s cubic-bezier(0.2, 0, 0.1, 1)`;
+                        roll.style.transform = `translateY(${targetY}em)`;
+                    });
+                }, delay);
+            });
+        }
+
+        document.getElementById('counter-apply-btn').addEventListener('click', triggerCounter);
+        document.getElementById('color-number').addEventListener('input', applyCounterColors);
+        document.getElementById('color-text').addEventListener('input', applyCounterColors);
+        document.getElementById('color-bg').addEventListener('input', (e) => {
+            document.getElementById('section-counter').style.background = e.target.value;
+        });
+
+        // WebM export (same as before)
+        document.getElementById('export-webm-btn').addEventListener('click', async () => {
+            const btn = document.getElementById('export-webm-btn');
+            const status = document.getElementById('export-status');
+            btn.disabled = true;
+            status.textContent = '녹화 준비 중...';
+            const display = document.getElementById('counter-display');
+            const rect = display.getBoundingClientRect();
+            const scale = 2;
+            const canvas = document.createElement('canvas');
+            canvas.width = rect.width * scale;
+            canvas.height = rect.height * scale;
+            const ctx = canvas.getContext('2d');
+            let mimeType = 'video/webm;codecs=vp9';
+            if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = 'video/webm;codecs=vp8';
+            if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = 'video/webm';
+            const stream = canvas.captureStream(60);
+            const recorder = new MediaRecorder(stream, { mimeType, videoBitsPerSecond: 8000000 });
+            const chunks = [];
+            recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
+            recorder.onstop = () => {
+                const blob = new Blob(chunks, { type: mimeType });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a'); a.href = url; a.download = 'counter-motion.webm'; a.click();
+                URL.revokeObjectURL(url); btn.disabled = false;
+                status.textContent = 'WebM 다운로드 완료!';
+            };
+            recorder.start();
+            status.textContent = '녹화 중...';
+            triggerCounter();
+            const startTime = performance.now();
+            function captureFrame() {
+                if (performance.now() - startTime > 4000) { recorder.stop(); return; }
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                const svgData = `<svg xmlns="http://www.w3.org/2000/svg" width="${rect.width}" height="${rect.height}"><foreignObject width="100%" height="100%"><div xmlns="http://www.w3.org/1999/xhtml">${display.outerHTML}</div></foreignObject></svg>`;
+                const img = new Image();
+                const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+                const svgUrl = URL.createObjectURL(svgBlob);
+                img.onload = () => { ctx.drawImage(img, 0, 0, canvas.width, canvas.height); URL.revokeObjectURL(svgUrl); requestAnimationFrame(captureFrame); };
+                img.onerror = () => { URL.revokeObjectURL(svgUrl); requestAnimationFrame(captureFrame); };
+                img.src = svgUrl;
+            }
+            setTimeout(() => requestAnimationFrame(captureFrame), 100);
+        });
+
+        // ==========================================
+        // ===== SECTION 2: 빛 스와이프 (Shimmer) =====
+        // ==========================================
+        let shimmerLoopInterval = null;
+
+        function updateShimmerDisplay() {
+            const text = document.getElementById('shimmer-text-input').value || '15개, 3,000원';
+            const textColor = document.getElementById('shimmer-color-text').value;
+            const bgColor = document.getElementById('shimmer-color-bg').value;
+            const display = document.getElementById('shimmer-display');
+            const base = display.querySelector('.shimmer-base');
+
+            base.textContent = text;
+            base.style.color = textColor;
+            display.style.background = 'transparent';
+            document.getElementById('section-shimmer').style.background = bgColor;
+        }
+
+        function triggerShimmer() {
+            updateShimmerDisplay();
+            const lightColor = document.getElementById('shimmer-color-light').value;
+            const width = document.getElementById('shimmer-width').value;
+            const speed = document.getElementById('shimmer-speed').value;
+            const display = document.getElementById('shimmer-display');
+            const light = display.querySelector('.shimmer-light');
+
+            // 빛 색상과 두께 설정
+            const halfW = parseInt(width) / 2;
+            light.style.background = `linear-gradient(90deg, transparent 0%, transparent ${50 - halfW}%, ${lightColor}cc ${50 - halfW/2}%, ${lightColor} 50%, ${lightColor}cc ${50 + halfW/2}%, transparent ${50 + halfW}%, transparent 100%)`;
+
+            // 리셋 & 재생
+            light.classList.remove('animate');
+            light.style.animationDuration = speed + 's';
+            void light.offsetWidth;
+            light.classList.add('animate');
+        }
+
+        document.getElementById('shimmer-play-btn').addEventListener('click', () => {
+            if (shimmerLoopInterval) { clearInterval(shimmerLoopInterval); shimmerLoopInterval = null; document.getElementById('shimmer-loop-btn').classList.remove('active'); }
+            triggerShimmer();
+        });
+
+        document.getElementById('shimmer-loop-btn').addEventListener('click', (e) => {
+            if (shimmerLoopInterval) {
+                clearInterval(shimmerLoopInterval);
+                shimmerLoopInterval = null;
+                e.target.classList.remove('active');
+            } else {
+                e.target.classList.add('active');
+                triggerShimmer();
+                const speed = parseFloat(document.getElementById('shimmer-speed').value);
+                shimmerLoopInterval = setInterval(triggerShimmer, (speed + 0.8) * 1000);
+            }
+        });
+
+        // 실시간 색상 반영
+        document.getElementById('shimmer-color-text').addEventListener('input', updateShimmerDisplay);
+        document.getElementById('shimmer-color-bg').addEventListener('input', updateShimmerDisplay);
+
+        // ==========================================
+        // ===== SECTION 3: 후광 (Radiance) =====
+        // ==========================================
+        let radianceLoopInterval = null;
+
+        function updateRadianceDisplay() {
+            const text = document.getElementById('radiance-text-input').value || '15개, 3,000원';
+            const textColor = document.getElementById('radiance-color-text').value;
+            const bgColor = document.getElementById('radiance-color-bg').value;
+            const display = document.getElementById('radiance-display');
+            const textEl = display.querySelector('.radiance-text');
+
+            textEl.textContent = text;
+            textEl.style.color = textColor;
+            document.getElementById('section-radiance').style.background = bgColor;
+        }
+
+        function triggerRadiance() {
+            updateRadianceDisplay();
+            const glowColor = document.getElementById('radiance-color-glow').value;
+            const rayCount = parseInt(document.getElementById('radiance-rays').value);
+            const rayLength = parseInt(document.getElementById('radiance-length').value);
+            const display = document.getElementById('radiance-display');
+            const textEl = display.querySelector('.radiance-text');
+            const glow = display.querySelector('.radiance-glow');
+            const raysContainer = display.querySelector('.radiance-rays');
+
+            // 글자에 text-shadow 추가
+            textEl.style.textShadow = `0 0 20px ${glowColor}, 0 0 40px ${glowColor}, 0 0 80px ${glowColor}88`;
+
+            // Glow 원형 펄스
+            glow.classList.remove('animate');
+            glow.style.background = `radial-gradient(circle, ${glowColor}88 0%, ${glowColor}44 40%, transparent 70%)`;
+            void glow.offsetWidth;
+            glow.classList.add('animate');
+
+            // 광선 생성
+            raysContainer.innerHTML = '';
+            for (let i = 0; i < rayCount; i++) {
+                const ray = document.createElement('div');
+                ray.className = 'ray';
+                const angle = (360 / rayCount) * i;
+                const rayW = 2 + Math.random() * 2;
+                ray.style.width = rayW + 'px';
+                ray.style.background = `linear-gradient(to bottom, ${glowColor}, transparent)`;
+                ray.style.transform = `translate(-50%, 0) rotate(${angle}deg)`;
+                ray.style.animationDelay = (Math.random() * 0.2) + 's';
+
+                // 커스텀 길이 적용
+                ray.style.setProperty('--ray-length', rayLength + 'px');
+                raysContainer.appendChild(ray);
+
+                // 약간의 딜레이 후 애니메이션
+                setTimeout(() => {
+                    ray.classList.add('animate');
+                    ray.style.animation = `rayShoot 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${Math.random() * 0.2}s forwards`;
+                    // 커스텀 keyframe 적용
+                    ray.animate([
+                        { height: '0px', opacity: 0.9 },
+                        { height: (rayLength * 0.6) + 'px', opacity: 0.8, offset: 0.4 },
+                        { height: rayLength + 'px', opacity: 0 }
+                    ], {
+                        duration: 1200,
+                        easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                        delay: Math.random() * 200,
+                        fill: 'forwards'
+                    });
+                }, 50);
+            }
+
+            // 일정 시간 후 text-shadow 페이드
+            setTimeout(() => {
+                textEl.style.textShadow = `0 0 5px ${glowColor}44`;
+            }, 1500);
+        }
+
+        document.getElementById('radiance-play-btn').addEventListener('click', () => {
+            if (radianceLoopInterval) { clearInterval(radianceLoopInterval); radianceLoopInterval = null; document.getElementById('radiance-loop-btn').classList.remove('active'); }
+            triggerRadiance();
+        });
+
+        document.getElementById('radiance-loop-btn').addEventListener('click', (e) => {
+            if (radianceLoopInterval) {
+                clearInterval(radianceLoopInterval);
+                radianceLoopInterval = null;
+                e.target.classList.remove('active');
+            } else {
+                e.target.classList.add('active');
+                triggerRadiance();
+                radianceLoopInterval = setInterval(triggerRadiance, 2500);
+            }
+        });
+
+        document.getElementById('radiance-color-text').addEventListener('input', updateRadianceDisplay);
+        document.getElementById('radiance-color-bg').addEventListener('input', updateRadianceDisplay);
+
+        // ==========================================
+        // 페이지 로드 시 초기화
+        // ==========================================
+        window.addEventListener('load', () => {
+            setTimeout(triggerCounter, 500);
+            setTimeout(triggerShimmer, 1000);
+            setTimeout(triggerRadiance, 1500);
+        });
+
+        // Smooth scroll
+        document.querySelectorAll('.page-nav a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                document.querySelector(link.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>
