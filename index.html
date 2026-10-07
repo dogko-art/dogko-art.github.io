@@ -11,201 +11,239 @@
     min-height: 100vh;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     color: #4a3b45;
-    background: radial-gradient(circle at 15% 0%, #eef2ff, #fdeef3 60%);
+    background: radial-gradient(circle at 50% 0%, #f3f6ff, #e9edf7 70%);
   }
 
-  .layout {
-    display: flex;
-    min-height: 100vh;
-  }
-
-  /* 왼쪽 1/4: 목록 */
-  .sidebar {
-    width: 25%;
-    min-width: 210px;
-    max-width: 300px;
-    padding: 40px 24px;
-    background: rgba(255,255,255,.55);
-    border-right: 1px solid rgba(0,0,0,.05);
-    position: sticky;
-    top: 0;
-    align-self: flex-start;
-    height: 100vh;
-    overflow-y: auto;
-  }
   .brand {
-    font-size: 1.3rem;
+    position: fixed;
+    top: 26px;
+    left: 30px;
+    font-size: 1.25rem;
     font-weight: 700;
+    color: #6a7b9a;
+    z-index: 20;
   }
   .tagline {
-    font-size: .85rem;
-    opacity: .6;
-    margin: 4px 0 26px;
-  }
-  .proj-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  .proj-list a {
-    text-decoration: none;
-    color: #4a3b45;
-    padding: 10px 14px;
-    border-radius: 10px;
-    font-size: .95rem;
-    font-weight: 500;
-    transition: background .15s;
-  }
-  .proj-list a:hover {
-    background: rgba(255,159,199,.22);
+    position: fixed;
+    top: 54px;
+    left: 30px;
+    font-size: .82rem;
+    opacity: .55;
+    z-index: 20;
   }
 
-  /* 오른쪽 3/4: 썸네일 */
-  .gallery {
-    flex: 1;
-    padding: 40px 34px;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 24px;
-    align-content: start;
+  /* ============================
+     스푼 + 우유 (기본 배경)
+     ============================ */
+  .stage {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
   }
-  .thumb-card {
-    display: block;
-    text-decoration: none;
-    color: inherit;
-    background: linear-gradient(160deg, #ffffff, #fbf4f8);
-    border-radius: 22px;
-    overflow: hidden;
-    box-shadow: 0 6px 18px rgba(80,40,60,.12);
-    transition: transform .22s ease, box-shadow .22s ease;
-  }
-  .thumb-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 16px 32px rgba(80,40,60,.22);
-  }
-  .thumb-visual {
-    height: 220px;
+
+  .spoon {
     position: relative;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: min(78vw, 560px);
+    aspect-ratio: 0.74 / 1;
   }
 
-  /* 사탕 아이콘 */
-  .candy-icon {
-    width: 62%;
-    max-width: 170px;
-    aspect-ratio: 1 / 1;
-    object-fit: contain;
-    /* 흰 배경을 자연스럽게 녹이기 위한 그림자 + 블렌드 */
-    mix-blend-mode: multiply;
-    filter: drop-shadow(0 10px 16px rgba(80,40,60,.18));
-    transition: transform .3s cubic-bezier(.22,.61,.36,1);
-  }
-  .thumb-card:hover .candy-icon {
-    transform: scale(1.18) rotate(-4deg);
-  }
-
-  /* 제목: 평소엔 숨김, hover 시 아래에서 떠오름 */
-  .thumb-title {
+  /* 스푼 손잡이 */
+  .spoon-handle {
     position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    padding: 14px 16px;
-    text-align: center;
-    font-weight: 700;
-    font-size: 1rem;
-    color: #4a3b45;
-    background: linear-gradient(to top, rgba(255,255,255,.92), rgba(255,255,255,0));
-    opacity: 0;
-    transform: translateY(12px);
-    transition: opacity .25s ease, transform .25s ease;
-    pointer-events: none;
+    left: 50%;
+    bottom: -30%;
+    transform: translateX(-50%);
+    width: 7%;
+    height: 55%;
+    border-radius: 40px;
+    background: linear-gradient(90deg, #b9bfc9 0%, #eef1f6 35%, #ffffff 50%, #d2d7e0 65%, #a9b0bc 100%);
+    box-shadow: 0 10px 24px rgba(80,90,120,.25);
+    z-index: 1;
   }
-  .thumb-card:hover .thumb-title {
-    opacity: 1;
-    transform: translateY(0);
+
+  /* 스푼 머리 (금속 테두리) */
+  .spoon-head {
+    position: absolute;
+    inset: 0;
+    border-radius: 50% 50% 50% 50% / 46% 46% 54% 54%;
+    background: linear-gradient(135deg, #c3c9d4 0%, #eef1f6 20%, #ffffff 42%, #d7dce4 60%, #aeb5c2 80%, #c9ced8 100%);
+    box-shadow:
+      0 30px 60px rgba(70,80,110,.3),
+      inset 0 2px 6px rgba(255,255,255,.9);
+    z-index: 2;
   }
-  .thumb-emoji {
-    width: 55%;
-    max-width: 150px;
-    aspect-ratio: 1 / 1;
+
+  /* 우유 */
+  .milk {
+    position: absolute;
+    inset: 4.5%;
+    border-radius: 50% 50% 50% 50% / 46% 46% 54% 54%;
+    background:
+      radial-gradient(ellipse at 38% 32%, #ffffff 0%, #fcfbf7 45%, #f3f0e8 100%);
+    box-shadow:
+      inset 0 10px 30px rgba(190,185,170,.35),
+      inset 0 -14px 30px rgba(210,205,190,.4);
+    overflow: hidden;
+    z-index: 3;
+  }
+
+  /* 우유 표면 하이라이트 */
+  .milk::before {
+    content: "";
+    position: absolute;
+    top: 10%;
+    left: 18%;
+    width: 46%;
+    height: 26%;
+    background: radial-gradient(ellipse, rgba(255,255,255,.9), rgba(255,255,255,0) 70%);
+    border-radius: 50%;
+    filter: blur(4px);
+  }
+
+  /* ============================
+     시리얼 글자 아이콘
+     ============================ */
+  .cereal-field {
+    position: absolute;
+    inset: 4.5%;
+    z-index: 4;
+  }
+
+  .cereal {
+    position: absolute;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 3.4rem;
-    transition: transform .3s cubic-bezier(.22,.61,.36,1);
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform .3s cubic-bezier(.34,1.56,.64,1);
+    /* x,y 좌표를 글자 중심 기준으로 맞추기 위해 -50% 보정 */
+    transform: translate(-50%, -50%) rotate(var(--rot, 0deg));
   }
-  .thumb-card:hover .thumb-emoji {
-    transform: scale(1.18) rotate(-4deg);
+  .cereal:hover {
+    transform: translate(-50%, -50%) rotate(var(--rot, 0deg)) scale(1.16);
+    z-index: 10;
   }
 
-  @media (max-width: 720px) {
-    .layout { flex-direction: column; }
-    .sidebar {
-      width: 100%;
-      max-width: none;
-      position: static;
-      height: auto;
-      border-right: none;
-      border-bottom: 1px solid rgba(0,0,0,.05);
-    }
-    .proj-list { flex-direction: row; flex-wrap: wrap; }
-    .gallery { padding: 26px 18px; }
+  /* 시리얼 글자 자체 - 두툼하고 울퉁불퉁한 질감 */
+  .cereal-letter {
+    font-family: "Arial Rounded MT Bold", "Helvetica Rounded", Arial, sans-serif;
+    font-weight: 900;
+    font-size: var(--size, 86px);
+    line-height: 1;
+    -webkit-text-stroke: 10px var(--c-mid);
+    paint-order: stroke fill;
+    color: var(--c-light);
+    text-shadow:
+      0 2px 0 var(--c-dark),
+      0 4px 1px var(--c-dark),
+      0 6px 10px rgba(80,60,40,.35);
+    letter-spacing: -2px;
+    user-select: none;
+    /* 울퉁불퉁 시리얼 표면 느낌: 미세한 점 질감 */
+    filter: drop-shadow(0 3px 4px rgba(90,70,50,.3));
+  }
+
+  /* 색상별 시리얼 */
+  .cereal.c-orange { --c-light:#ffb27a; --c-mid:#ff7a2f; --c-dark:#d9560f; }
+  .cereal.c-blue   { --c-light:#7cc6ff; --c-mid:#2f8fff; --c-dark:#1565d8; }
+  .cereal.c-green  { --c-light:#b6e86a; --c-mid:#7cc02f; --c-dark:#4e8a12; }
+
+  /* 제목: hover 시 시리얼 위에 떠오름 */
+  .cereal-title {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%) translateY(8px) rotate(calc(var(--rot, 0deg) * -1));
+    white-space: nowrap;
+    background: rgba(74,59,69,.92);
+    color: #fff;
+    font-size: .85rem;
+    font-weight: 700;
+    padding: 7px 14px;
+    border-radius: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .22s ease, transform .22s ease;
+    box-shadow: 0 6px 16px rgba(80,40,60,.25);
+  }
+  .cereal-title::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: rgba(74,59,69,.92);
+  }
+  .cereal:hover .cereal-title {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) rotate(calc(var(--rot, 0deg) * -1));
+  }
+
+  @media (max-width: 600px) {
+    .cereal-letter { font-size: calc(var(--size, 86px) * 0.7); -webkit-text-stroke-width: 7px; }
   }
 </style>
 </head>
 <body>
-  <div class="layout">
-    <aside class="sidebar">
-      <div class="brand">🎨 dogko-art</div>
-      <p class="tagline">만든 것들</p>
-      <nav class="proj-list" id="projNav"></nav>
-    </aside>
-    <main class="gallery" id="gallery"></main>
+  <div class="brand">🥣 dogko-art</div>
+  <p class="tagline">만든 것들</p>
+
+  <div class="stage">
+    <div class="spoon">
+      <div class="spoon-handle"></div>
+      <div class="spoon-head"></div>
+      <div class="milk"></div>
+      <div class="cereal-field" id="cerealField"></div>
+    </div>
   </div>
 
 <script>
 (function(){
   var PROJECTS = [
-    { title: "케이크 꾸미기", href: "cake/", candy: "assets/candy-pink.jpg" },
-    { title: "번호 뽑기", href: "lotto/", candy: "assets/candy-green.jpg" },
-    { title: "밤하늘 꾸미기", href: "nightsky/", candy: "assets/candy-blue.jpg" }
+    {
+      title: "케이크 꾸미기", href: "cake/", letter: "C",
+      color: "c-orange", size: 128,
+      x: 40, y: 30, rot: -10
+    },
+    {
+      title: "번호 뽑기", href: "lotto/", letter: "N",
+      color: "c-blue", size: 138,
+      x: 60, y: 52, rot: 8
+    },
+    {
+      title: "밤하늘 꾸미기", href: "nightsky/", letter: "S",
+      color: "c-green", size: 122,
+      x: 36, y: 70, rot: -6
+    }
   ];
 
-  var nav = document.getElementById("projNav");
-  var gallery = document.getElementById("gallery");
+  var field = document.getElementById("cerealField");
 
   PROJECTS.forEach(function(p){
-    var link = document.createElement("a");
-    link.href = p.href;
-    link.textContent = p.title;
-    nav.appendChild(link);
+    var cereal = document.createElement("a");
+    cereal.className = "cereal " + p.color;
+    cereal.href = p.href;
+    cereal.setAttribute("aria-label", p.title);
+    cereal.style.left = p.x + "%";
+    cereal.style.top = p.y + "%";
+    cereal.style.setProperty("--rot", p.rot + "deg");
+    cereal.style.setProperty("--size", p.size + "px");
 
-    var card = document.createElement("a");
-    card.className = "thumb-card";
-    card.href = p.href;
-    card.setAttribute("aria-label", p.title);
+    var letter = document.createElement("span");
+    letter.className = "cereal-letter";
+    letter.textContent = p.letter;
 
-    var visual = document.createElement("div");
-    visual.className = "thumb-visual";
-
-    var icon = document.createElement("img");
-    icon.className = "candy-icon";
-    icon.src = p.candy;
-    icon.alt = p.title;
-    icon.loading = "lazy";
-    visual.appendChild(icon);
-
-    var title = document.createElement("div");
-    title.className = "thumb-title";
+    var title = document.createElement("span");
+    title.className = "cereal-title";
     title.textContent = p.title;
 
-    card.appendChild(visual);
-    card.appendChild(title);
-    gallery.appendChild(card);
+    cereal.appendChild(title);
+    cereal.appendChild(letter);
+    field.appendChild(cereal);
   });
 })();
 </script>
