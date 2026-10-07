@@ -73,88 +73,74 @@
     display: block;
     text-decoration: none;
     color: inherit;
-    background: #fff;
-    border-radius: 18px;
+    background: linear-gradient(160deg, #ffffff, #fbf4f8);
+    border-radius: 22px;
     overflow: hidden;
     box-shadow: 0 6px 18px rgba(80,40,60,.12);
-    transition: transform .18s, box-shadow .18s;
+    transition: transform .22s ease, box-shadow .22s ease;
   }
   .thumb-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 26px rgba(80,40,60,.2);
+    transform: translateY(-6px);
+    box-shadow: 0 16px 32px rgba(80,40,60,.22);
   }
   .thumb-visual {
-    height: 160px;
+    height: 220px;
     position: relative;
     overflow: hidden;
-    background: linear-gradient(135deg, #fdeef3, #eef2ff);
-  }
-  .thumb-title {
-    padding: 14px 16px;
-    font-weight: 600;
-    font-size: .95rem;
-  }
-  .thumb-emoji {
-    position: absolute;
-    inset: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 3rem;
   }
 
-  /* 케이크 꾸미기 썸네일 미니 일러스트 */
-  .mini-cake {
-    position: absolute;
-    left: 50%; top: 52%;
-    transform: translate(-50%, -50%);
-    width: 74px; height: 96px;
+  /* 사탕 아이콘 */
+  .candy-icon {
+    width: 62%;
+    max-width: 170px;
+    aspect-ratio: 1 / 1;
+    object-fit: contain;
+    /* 흰 배경을 자연스럽게 녹이기 위한 그림자 + 블렌드 */
+    mix-blend-mode: multiply;
+    filter: drop-shadow(0 10px 16px rgba(80,40,60,.18));
+    transition: transform .3s cubic-bezier(.22,.61,.36,1);
   }
-  .mini-slice {
+  .thumb-card:hover .candy-icon {
+    transform: scale(1.18) rotate(-4deg);
+  }
+
+  /* 제목: 평소엔 숨김, hover 시 아래에서 떠오름 */
+  .thumb-title {
     position: absolute;
-    inset: 0 0 16px 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 14px 16px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 1rem;
+    color: #4a3b45;
+    background: linear-gradient(to top, rgba(255,255,255,.92), rgba(255,255,255,0));
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity .25s ease, transform .25s ease;
+    pointer-events: none;
+  }
+  .thumb-card:hover .thumb-title {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .thumb-emoji {
+    width: 55%;
+    max-width: 150px;
+    aspect-ratio: 1 / 1;
     display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    border-radius: 6px 6px 4px 4px;
-    box-shadow: 0 8px 14px rgba(80,40,60,.22);
+    align-items: center;
+    justify-content: center;
+    font-size: 3.4rem;
+    transition: transform .3s cubic-bezier(.22,.61,.36,1);
   }
-  .mini-sponge {
-    flex: 2.2;
-    background:
-      radial-gradient(circle at 20% 25%, #ff86c8 0 2px, transparent 3px),
-      radial-gradient(circle at 65% 15%, #6fc6ff 0 2px, transparent 3px),
-      radial-gradient(circle at 40% 60%, #ffd166 0 2px, transparent 3px),
-      radial-gradient(circle at 80% 65%, #9b8cff 0 2px, transparent 3px),
-      radial-gradient(circle at 15% 80%, #5ee6b0 0 2px, transparent 3px),
-      #fbeecb;
-    background-size: 15px 15px, 17px 17px, 14px 14px, 16px 16px, 15px 15px, auto;
+  .thumb-card:hover .thumb-emoji {
+    transform: scale(1.18) rotate(-4deg);
   }
-  .mini-cream {
-    flex: .5;
-    background: #fffaf1;
-  }
-  .mini-cap {
-    position: absolute;
-    top: -11px; left: -3px; right: -3px;
-    height: 22px;
-    background: #fffaf1;
-    border-radius: 50% 50% 6px 6px / 60% 60% 6px 6px;
-    box-shadow: 0 3px 5px rgba(80,40,60,.15);
-  }
-  .mini-gem {
-    position: absolute;
-    border-radius: 50%;
-    box-shadow: 0 2px 3px rgba(0,0,0,.3);
-  }
-  .mini-gem.g1 { width: 15px; height: 15px; left: 8px; top: 18px; background: radial-gradient(circle at 30% 25%, #fff, #ff9fc7 40%, #c02368); }
-  .mini-gem.g2 {
-    width: 13px; height: 15px; left: 44px; top: 4px;
-    background: radial-gradient(circle at 30% 25%, #fff, #9c6bf0 40%, #5a2ba8);
-    clip-path: polygon(50% 0%, 100% 45%, 50% 100%, 0% 45%);
-    border-radius: 0;
-  }
-  .mini-gem.g3 { width: 14px; height: 14px; left: 26px; top: 40px; background: radial-gradient(circle at 30% 25%, #fff, #34c99a 40%, #0d7f63); }
 
   @media (max-width: 720px) {
     .layout { flex-direction: column; }
@@ -184,9 +170,9 @@
 <script>
 (function(){
   var PROJECTS = [
-    { title: "케이크 꾸미기", href: "cake/", thumb: "cake" },
-    { title: "번호 뽑기", href: "lotto/", emoji: "💎" },
-    { title: "밤하늘 꾸미기", href: "nightsky/", emoji: "🌙" }
+    { title: "케이크 꾸미기", href: "cake/", candy: "assets/candy-pink.jpg" },
+    { title: "번호 뽑기", href: "lotto/", candy: "assets/candy-green.jpg" },
+    { title: "밤하늘 꾸미기", href: "nightsky/", candy: "assets/candy-blue.jpg" }
   ];
 
   var nav = document.getElementById("projNav");
@@ -201,29 +187,17 @@
     var card = document.createElement("a");
     card.className = "thumb-card";
     card.href = p.href;
+    card.setAttribute("aria-label", p.title);
 
     var visual = document.createElement("div");
     visual.className = "thumb-visual";
 
-    if (p.thumb === "cake") {
-      visual.innerHTML =
-        '<div class="mini-cake">' +
-          '<div class="mini-slice">' +
-            '<div class="mini-sponge"></div>' +
-            '<div class="mini-cream"></div>' +
-            '<div class="mini-sponge"></div>' +
-          '</div>' +
-          '<div class="mini-cap"></div>' +
-          '<div class="mini-gem g1"></div>' +
-          '<div class="mini-gem g2"></div>' +
-          '<div class="mini-gem g3"></div>' +
-        '</div>';
-    } else {
-      var emoji = document.createElement("div");
-      emoji.className = "thumb-emoji";
-      emoji.textContent = p.emoji || "✨";
-      visual.appendChild(emoji);
-    }
+    var icon = document.createElement("img");
+    icon.className = "candy-icon";
+    icon.src = p.candy;
+    icon.alt = p.title;
+    icon.loading = "lazy";
+    visual.appendChild(icon);
 
     var title = document.createElement("div");
     title.className = "thumb-title";
