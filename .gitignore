@@ -10,3 +10,5 @@ config.local.*
 # 시스템/도구 파일
 .DS_Store
 node_modules/
+# 이미지 원본 백업 (로컬 보관용)
+assets/_orig/

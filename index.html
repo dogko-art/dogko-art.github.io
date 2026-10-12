@@ -75,13 +75,13 @@
     z-index: 2;
   }
 
-  /* 우유 */
+  /* 우유 — 시리얼 이미지의 크림색 배경과 톤을 맞춤 */
   .milk {
     position: absolute;
     inset: 4.5%;
     border-radius: 50% 50% 50% 50% / 46% 46% 54% 54%;
     background:
-      radial-gradient(ellipse at 38% 32%, #ffffff 0%, #fcfbf7 45%, #f3f0e8 100%);
+      radial-gradient(ellipse at 38% 32%, #fdfcf8 0%, #faf8f1 45%, #f1ede2 100%);
     box-shadow:
       inset 0 10px 30px rgba(190,185,170,.35),
       inset 0 -14px 30px rgba(210,205,190,.4);
@@ -123,33 +123,20 @@
     transform: translate(-50%, -50%) rotate(var(--rot, 0deg));
   }
   .cereal:hover {
-    transform: translate(-50%, -50%) rotate(var(--rot, 0deg)) scale(1.16);
+    transform: translate(-50%, -50%) rotate(var(--rot, 0deg)) scale(1.14);
     z-index: 10;
   }
 
-  /* 시리얼 글자 자체 - 두툼하고 울퉁불퉁한 질감 */
+  /* 시리얼 글자 실사 이미지 (배경 투명 처리됨) */
   .cereal-letter {
-    font-family: "Arial Rounded MT Bold", "Helvetica Rounded", Arial, sans-serif;
-    font-weight: 900;
-    font-size: var(--size, 86px);
-    line-height: 1;
-    -webkit-text-stroke: 10px var(--c-mid);
-    paint-order: stroke fill;
-    color: var(--c-light);
-    text-shadow:
-      0 2px 0 var(--c-dark),
-      0 4px 1px var(--c-dark),
-      0 6px 10px rgba(80,60,40,.35);
-    letter-spacing: -2px;
+    display: block;
+    width: var(--size, 120px);
+    height: auto;
     user-select: none;
-    /* 울퉁불퉁 시리얼 표면 느낌: 미세한 점 질감 */
-    filter: drop-shadow(0 3px 4px rgba(90,70,50,.3));
+    pointer-events: none;
+    -webkit-user-drag: none;
+    filter: drop-shadow(0 5px 8px rgba(90,70,50,.3));
   }
-
-  /* 색상별 시리얼 */
-  .cereal.c-orange { --c-light:#ffb27a; --c-mid:#ff7a2f; --c-dark:#d9560f; }
-  .cereal.c-blue   { --c-light:#7cc6ff; --c-mid:#2f8fff; --c-dark:#1565d8; }
-  .cereal.c-green  { --c-light:#b6e86a; --c-mid:#7cc02f; --c-dark:#4e8a12; }
 
   /* 제목: hover 시 시리얼 위에 떠오름 */
   .cereal-title {
@@ -205,19 +192,16 @@
 (function(){
   var PROJECTS = [
     {
-      title: "케이크 꾸미기", href: "cake/", letter: "C",
-      color: "c-orange", size: 128,
-      x: 40, y: 30, rot: -10
+      title: "케이크 꾸미기", href: "cake/", img: "assets/cereal-c.png",
+      size: 120, x: 40, y: 30, rot: -8
     },
     {
-      title: "번호 뽑기", href: "lotto/", letter: "N",
-      color: "c-blue", size: 138,
-      x: 60, y: 52, rot: 8
+      title: "번호 뽑기", href: "lotto/", img: "assets/cereal-n.png",
+      size: 128, x: 62, y: 50, rot: 7
     },
     {
-      title: "밤하늘 꾸미기", href: "nightsky/", letter: "S",
-      color: "c-green", size: 122,
-      x: 36, y: 70, rot: -6
+      title: "밤하늘 꾸미기", href: "nightsky/", img: "assets/cereal-s.png",
+      size: 116, x: 36, y: 70, rot: -5
     }
   ];
 
@@ -225,7 +209,7 @@
 
   PROJECTS.forEach(function(p){
     var cereal = document.createElement("a");
-    cereal.className = "cereal " + p.color;
+    cereal.className = "cereal";
     cereal.href = p.href;
     cereal.setAttribute("aria-label", p.title);
     cereal.style.left = p.x + "%";
@@ -233,9 +217,11 @@
     cereal.style.setProperty("--rot", p.rot + "deg");
     cereal.style.setProperty("--size", p.size + "px");
 
-    var letter = document.createElement("span");
+    var letter = document.createElement("img");
     letter.className = "cereal-letter";
-    letter.textContent = p.letter;
+    letter.src = p.img;
+    letter.alt = p.title;
+    letter.loading = "lazy";
 
     var title = document.createElement("span");
     title.className = "cereal-title";
