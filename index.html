@@ -43,71 +43,26 @@
     padding: 60px 20px;
   }
 
+  /* 스푼 + 우유 실사 이미지 */
   .spoon {
     position: relative;
-    width: min(78vw, 560px);
-    aspect-ratio: 0.74 / 1;
-  }
-
-  /* 스푼 손잡이 */
-  .spoon-handle {
-    position: absolute;
-    left: 50%;
-    bottom: -30%;
-    transform: translateX(-50%);
-    width: 7%;
-    height: 55%;
-    border-radius: 40px;
-    background: linear-gradient(90deg, #b9bfc9 0%, #eef1f6 35%, #ffffff 50%, #d2d7e0 65%, #a9b0bc 100%);
-    box-shadow: 0 10px 24px rgba(80,90,120,.25);
-    z-index: 1;
-  }
-
-  /* 스푼 머리 (금속 테두리) */
-  .spoon-head {
-    position: absolute;
-    inset: 0;
-    border-radius: 50% 50% 50% 50% / 46% 46% 54% 54%;
-    background: linear-gradient(135deg, #c3c9d4 0%, #eef1f6 20%, #ffffff 42%, #d7dce4 60%, #aeb5c2 80%, #c9ced8 100%);
-    box-shadow:
-      0 30px 60px rgba(70,80,110,.3),
-      inset 0 2px 6px rgba(255,255,255,.9);
-    z-index: 2;
-  }
-
-  /* 우유 — 시리얼 이미지의 크림색 배경과 톤을 맞춤 */
-  .milk {
-    position: absolute;
-    inset: 4.5%;
-    border-radius: 50% 50% 50% 50% / 46% 46% 54% 54%;
-    background:
-      radial-gradient(ellipse at 38% 32%, #fdfcf8 0%, #faf8f1 45%, #f1ede2 100%);
-    box-shadow:
-      inset 0 10px 30px rgba(190,185,170,.35),
-      inset 0 -14px 30px rgba(210,205,190,.4);
-    overflow: hidden;
-    z-index: 3;
-  }
-
-  /* 우유 표면 하이라이트 */
-  .milk::before {
-    content: "";
-    position: absolute;
-    top: 10%;
-    left: 18%;
-    width: 46%;
-    height: 26%;
-    background: radial-gradient(ellipse, rgba(255,255,255,.9), rgba(255,255,255,0) 70%);
-    border-radius: 50%;
-    filter: blur(4px);
+    width: min(72vw, 460px);
+    aspect-ratio: 239 / 320;
+    background: url("assets/spoon-milk.png") center / contain no-repeat;
+    filter: drop-shadow(0 20px 40px rgba(70,80,110,.28));
   }
 
   /* ============================
      시리얼 글자 아이콘
+     — 우유 타원 영역에만 배치 (이미지 기준 좌표)
      ============================ */
   .cereal-field {
     position: absolute;
-    inset: 4.5%;
+    /* 스푼 이미지에서 우유가 담긴 타원 영역 */
+    left: 17%;
+    right: 17%;
+    top: 13%;
+    bottom: 38%;
     z-index: 4;
   }
 
@@ -181,9 +136,6 @@
 
   <div class="stage">
     <div class="spoon">
-      <div class="spoon-handle"></div>
-      <div class="spoon-head"></div>
-      <div class="milk"></div>
       <div class="cereal-field" id="cerealField"></div>
     </div>
   </div>
@@ -193,15 +145,15 @@
   var PROJECTS = [
     {
       title: "케이크 꾸미기", href: "cake/", img: "assets/cereal-c.png",
-      size: 120, x: 40, y: 30, rot: -8
+      size: 86, x: 44, y: 34, rot: -8
     },
     {
       title: "번호 뽑기", href: "lotto/", img: "assets/cereal-n.png",
-      size: 128, x: 62, y: 50, rot: 7
+      size: 92, x: 62, y: 56, rot: 7
     },
     {
       title: "밤하늘 꾸미기", href: "nightsky/", img: "assets/cereal-s.png",
-      size: 116, x: 36, y: 70, rot: -5
+      size: 82, x: 38, y: 72, rot: -5
     }
   ];
 
